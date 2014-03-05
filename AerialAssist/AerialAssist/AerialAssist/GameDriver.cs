@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
+using BradleyXboxUtils;
 
 namespace AerialAssist
 {
@@ -20,6 +21,7 @@ namespace AerialAssist
         SpriteBatch spriteBatch;
 
         Texture2D field;
+        Texture2D truss;
         float widthScale, heightScale;
 
         List<Robot> robots;
@@ -41,6 +43,15 @@ namespace AerialAssist
         protected override void Initialize()
         {
             base.Initialize();
+            AerialRobot.ArcadeDriveConstant = 4f;
+            AerialRobot.McCannumDriveConstant = 3f;
+            AerialRobot.UnicornDriveConstant = 4f;
+            AerialRobot.turnConst = .1f;
+
+            AerialRobot.minXPosition = 40f;
+            AerialRobot.maxXPosition = 550f;
+            AerialRobot.minYPosition = 36f;
+            AerialRobot.maxYPosition = 260f;
         }
 
         /// <summary>
@@ -51,12 +62,13 @@ namespace AerialAssist
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
             field = Content.Load<Texture2D>("Field");
+            truss = Content.Load<Texture2D>("Truss");
             widthScale = (float)graphics.GraphicsDevice.Viewport.Width / field.Width;
             heightScale = (float)graphics.GraphicsDevice.Viewport.Height / field.Height;
 
-            Texture2D genericRobotImage = Content.Load<Texture2D>("Robot");
+            Texture2D genericRobotImage = Content.Load<Texture2D>("robot2");
             robots = new List<Robot>();
-
+            robots.Add(new AerialRobot(genericRobotImage, new Vector2(.12f * widthScale, .12f * heightScale), new Vector2(widthScale * 100f, heightScale * 100f), Color.Red, 0f, 0f, new KeyboardInput(PlayerIndex.One), AerialRobot.McCannumDrive));
             
         }
 
@@ -80,6 +92,10 @@ namespace AerialAssist
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
 
+            foreach (Robot r in robots)
+            {
+                r.run(robots, balls, widthScale, heightScale);
+            }
             
 
             base.Update(gameTime);
@@ -113,6 +129,8 @@ namespace AerialAssist
             //
             //
             //
+
+            spriteBatch.Draw(truss, new Vector2(0, 0), null, Color.White, 0f, Vector2.Zero, new Vector2(widthScale, heightScale), SpriteEffects.None, 0f);
 
             spriteBatch.End();
 

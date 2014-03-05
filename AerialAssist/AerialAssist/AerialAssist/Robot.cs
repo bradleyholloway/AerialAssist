@@ -9,12 +9,13 @@ namespace AerialAssist
 {
     interface Robot
     {
-        public Texture2D getImage();
-        public float getRotation();
-        public Vector2 getLocation();
-        public Vector2 getScale();
-        public Color getColor();
-        public float getBallHeight();
-        public void run(List<Robot> robots, List<Ball> balls);
+        Texture2D getImage();
+        float getRotation();
+        Vector2 getLocation();
+        Vector2 getScale();
+        Color getColor();
+        Vector2 getOrigin();
+        float getBallHeight();
+        void run(List<Robot> robots, List<Ball> balls, float widthScale, float heightScale);
     }
 }

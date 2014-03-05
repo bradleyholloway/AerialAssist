@@ -169,6 +169,10 @@ namespace BradleyXboxUtils
 
         public override double getLeftX()
         {
+            return boolToDouble(false);
+        }
+        public override double getRightX()
+        {
             if (secondPlayer)
             {
                 if (Keyboard.GetState().IsKeyDown(Keys.D))
@@ -187,10 +191,6 @@ namespace BradleyXboxUtils
                 else
                     return 0;
             }
-        }
-        public override double getRightX()
-        {
-            return boolToDouble(false);
         }
 
         public override double getLeftY()
