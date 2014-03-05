@@ -15,5 +15,6 @@ namespace AerialAssist
         public Vector2 getScale();
         public Color getColor();
         public float getBallHeight();
+        public void run(List<Robot> robots, List<Ball> balls);
     }
 }
