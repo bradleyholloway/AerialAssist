@@ -169,7 +169,11 @@ namespace BradleyXboxUtils
 
         public override double getLeftX()
         {
-            return boolToDouble(false);
+            if (Keyboard.GetState().IsKeyDown(Keys.D))
+                return 1;
+            else if (Keyboard.GetState().IsKeyDown(Keys.A))
+                return -1;
+            return 0;
         }
         public override double getRightX()
         {

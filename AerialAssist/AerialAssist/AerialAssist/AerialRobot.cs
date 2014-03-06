@@ -22,15 +22,18 @@ namespace AerialAssist
         public static float maxXPosition = 1f;
         public static float minYPosition = 0f;
         public static float maxYPosition = 1f;
+        public static float launchPower = 1f;
 
         private Texture2D robotImage;
         private Vector2 scale;
         private Vector2 location;
+        private Vector2 velocity;
         private Color color;
         private float rotation;
         private float ballH;
         private Input driverInput;
         private int driveMode;
+        private Ball activeBall;
 
         public AerialRobot(Texture2D robotImage, Vector2 scale, Vector2 location, Color color, float rotation, float ballH, Input driverInput, int driveMode)
         {
@@ -42,6 +45,7 @@ namespace AerialAssist
             this.ballH = ballH;
             this.driverInput = driverInput;
             this.driveMode = driveMode;
+            this.activeBall = null;
         }
 
         Vector2 Robot.getLocation()
@@ -82,7 +86,16 @@ namespace AerialAssist
         void Robot.run(List<Robot> robots, List<Ball> balls, float widthScale, float heightScale)
         {
             drive(robots, balls, widthScale, heightScale);
-            
+
+            if (driverInput.getRightActionButton())
+            {
+                if (activeBall != null)
+                {
+                    activeBall.launch(new Vector3(launchPower * (float)Math.Cos(rotation) + velocity.X, launchPower * (float)Math.Sin(rotation) + velocity.Y,2f));
+                    activeBall = null;
+                }
+            }
+
         }
 
         private void drive(List<Robot> robots, List<Ball> balls, float widthScale, float heightScale)
@@ -113,7 +126,8 @@ namespace AerialAssist
                 float powerAxis = (float)-driverInput.getLeftY();
                 float strafeAxis = (float)driverInput.getLeftX();
 
-                tempLocation = location + new Vector2(strafeAxis * McCannumDriveConstant * (float)Math.Sin(rotation) + powerAxis * McCannumDriveConstant * (float)Math.Cos(rotation), powerAxis * McCannumDriveConstant * (float)Math.Sin(rotation) + strafeAxis * McCannumDriveConstant * (float)Math.Cos(rotation));
+                tempLocation = location + new Vector2(strafeAxis * (float)Math.Sin(rotation) * McCannumDriveConstant, -strafeAxis * (float)Math.Cos(rotation) * McCannumDriveConstant);
+                tempLocation+= new Vector2(powerAxis * McCannumDriveConstant * (float)Math.Cos(rotation), powerAxis * McCannumDriveConstant * (float)Math.Sin(rotation));
 
                 tempRotation = rotation + turnAxis * turnConst;
             }
@@ -123,7 +137,8 @@ namespace AerialAssist
                 float powerAxis = (float)-driverInput.getLeftY();
                 float strafeAxis = (float)driverInput.getLeftX();
 
-                tempLocation = location + new Vector2(strafeAxis * UnicornDriveConstant * (float)Math.Sin(rotation) + powerAxis * UnicornDriveConstant * (float)Math.Cos(rotation), powerAxis * UnicornDriveConstant * (float)Math.Sin(rotation) + strafeAxis * UnicornDriveConstant * (float)Math.Cos(rotation));
+                tempLocation = location + new Vector2(strafeAxis * (float)Math.Sin(rotation) * UnicornDriveConstant, -strafeAxis * (float)Math.Cos(rotation) * UnicornDriveConstant);
+                tempLocation += new Vector2(powerAxis * UnicornDriveConstant * (float)Math.Cos(rotation), powerAxis * UnicornDriveConstant * (float)Math.Sin(rotation));
 
                 tempRotation = rotation + turnAxis * turnConst;
 
@@ -131,9 +146,32 @@ namespace AerialAssist
             }
             if (tempLocation.X > minXPosition * widthScale && tempLocation.X < maxXPosition * widthScale && tempLocation.Y > minYPosition * heightScale && tempLocation.Y < maxYPosition * heightScale)
             {
+                velocity = tempLocation - location;
                 location = tempLocation;
             }
             rotation = tempRotation;
+
+            foreach (Ball b in balls)
+            {
+                if(!b.Equals(activeBall) && UTIL.distance(location, b.getLocation()) < Ball.radius/2 && b.getHeight() < .1f) 
+                {
+                    if (driverInput.getBottomActionButton() && Math.Abs(UTIL.normalizeDirection(rotation) - UTIL.normalizeDirection(UTIL.getDirectionTward(location, b.getLocation()))) < .35 && activeBall== null)
+                    {
+                        b.linkRobot(this);
+                        activeBall = b;
+                    }
+                    else
+                    {
+                        b.pushBall(UTIL.magD((Ball.radius/2 - UTIL.distance(location, b.getLocation())) * .07f, UTIL.getDirectionTward(location, b.getLocation())));
+                    }
+                }
+            }
+        }
+        
+
+        void Robot.linkBall(Ball b)
+        {
+            this.activeBall = b;
         }
     }
 }

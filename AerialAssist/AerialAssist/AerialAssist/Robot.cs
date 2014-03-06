@@ -17,5 +17,6 @@ namespace AerialAssist
         Vector2 getOrigin();
         float getBallHeight();
         void run(List<Robot> robots, List<Ball> balls, float widthScale, float heightScale);
+        void linkBall(Ball ball);
     }
 }

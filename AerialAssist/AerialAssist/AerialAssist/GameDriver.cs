@@ -23,6 +23,7 @@ namespace AerialAssist
         Texture2D field;
         Texture2D truss;
         float widthScale, heightScale;
+        float trussHeight;
 
         List<Robot> robots;
         List<Ball> balls;
@@ -30,7 +31,7 @@ namespace AerialAssist
         public GameDriver()
         {
             graphics = new GraphicsDeviceManager(this);
-            graphics.IsFullScreen = false;
+            graphics.IsFullScreen = true;
             Content.RootDirectory = "Content";
         }
 
@@ -60,16 +61,31 @@ namespace AerialAssist
         /// </summary>
         protected override void LoadContent()
         {
+            
             spriteBatch = new SpriteBatch(GraphicsDevice);
             field = Content.Load<Texture2D>("Field");
             truss = Content.Load<Texture2D>("Truss");
             widthScale = (float)graphics.GraphicsDevice.Viewport.Width / field.Width;
             heightScale = (float)graphics.GraphicsDevice.Viewport.Height / field.Height;
 
-            Texture2D genericRobotImage = Content.Load<Texture2D>("robot2");
+            Ball.trussHeight = trussHeight = 5;
+            Ball.image = Content.Load<Texture2D>("sphere");
+            Ball.radius = widthScale * 47f;
+            Ball.growthConstant = .02f;
+            Ball.decayConstant = .006f;
+            Ball.ballAcceleration = 0.08f;
+            Ball.bounceDecay = .32f;
+            AerialRobot.launchPower = 2f;
+
+            Texture2D sonic = Content.Load<Texture2D>("robot2");
+
             robots = new List<Robot>();
-            robots.Add(new AerialRobot(genericRobotImage, new Vector2(.12f * widthScale, .12f * heightScale), new Vector2(widthScale * 100f, heightScale * 100f), Color.Red, 0f, 0f, new KeyboardInput(PlayerIndex.One), AerialRobot.McCannumDrive));
-            
+            robots.Add(new AerialRobot(sonic, new Vector2(.12f * widthScale, .12f * heightScale), new Vector2(widthScale * 100f, heightScale * 100f), Color.Red, 0f, 0f, new KeyboardInput(PlayerIndex.One), AerialRobot.McCannumDrive));
+            //robots.Add(new AerialRobot(sonic, new Vector2(.12f * widthScale, .12f * heightScale), new Vector2(widthScale * 200f, heightScale * 100f), Color.Red, (float)Math.PI, 0f, new KeyboardInput(PlayerIndex.Two), AerialRobot.McCannumDrive));
+
+            balls = new List<Ball>();
+            balls.Add(new Ball(robots.ElementAt<Robot>(0), Color.Red));
+            //balls.Add(new Ball(robots.ElementAt<Robot>(1), Color.Blue));
         }
 
         /// <summary>
@@ -89,15 +105,17 @@ namespace AerialAssist
         protected override void Update(GameTime gameTime)
         {
             // Allows the game to exit
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 this.Exit();
 
             foreach (Robot r in robots)
             {
                 r.run(robots, balls, widthScale, heightScale);
             }
-            
-
+            foreach (Ball b in balls)
+            {
+                b.run(balls, widthScale, heightScale);
+            }
             base.Update(gameTime);
         }
 
@@ -120,10 +138,10 @@ namespace AerialAssist
                 spriteBatch.Draw(r.getImage(), r.getLocation(), null, r.getColor(), r.getRotation(), r.getOrigin(), r.getScale(), SpriteEffects.None, 0f);
             }
 
-            //Draw the Balls (if not taken)
-            //foreach (Ball b in balls) {
-            //    spriteBatch.Draw(b.getImage(), b.getLocation(), null, b.getColor(), b.getRotation(), b.getOrigin(), b.getScale(), SpriteEffects.None, 0f);
-            //}
+            //Draw the Balls
+            foreach (Ball b in balls) {
+                spriteBatch.Draw(b.getImage(), b.getLocation(), null, b.getColor(), b.getRotation(), b.getOrigin(), b.getScale(), SpriteEffects.None, 0f);
+            }
 
             //Draw the Score and Time
             //
@@ -131,6 +149,14 @@ namespace AerialAssist
             //
 
             spriteBatch.Draw(truss, new Vector2(0, 0), null, Color.White, 0f, Vector2.Zero, new Vector2(widthScale, heightScale), SpriteEffects.None, 0f);
+
+            foreach (Ball b in balls)
+            {
+                if (b.getHeight() > trussHeight)
+                {
+                    spriteBatch.Draw(b.getImage(), b.getLocation(), null, b.getColor(), b.getRotation(), b.getOrigin(), b.getScale(), SpriteEffects.None, 0f);
+                }
+            }
 
             spriteBatch.End();
 
