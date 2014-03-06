@@ -26,13 +26,15 @@ namespace AerialAssist
         private float timeSinceLaunch;
         private Robot linked;
         private bool inAir;
+        private ScoreMatrix matrix;
 
-        public Ball(Robot startLink, Color color)
+        public Ball(Robot startLink, Color color, Robot r2, Robot r3)
         {
             this.linked = startLink;
             this.color = color;
             this.isFree = false;
             this.linked.linkBall(this);
+            this.matrix = new ScoreMatrix(startLink, r2, r3);
         }
 
         public void run(List<Ball> balls, float widthScale, float heightScale)
@@ -71,6 +73,21 @@ namespace AerialAssist
                 }
                 location = new Vector3(x, y, z);
 
+                foreach (Ball b in balls)
+                {
+                    if (!b.Equals(this))
+                    {
+                        if (BradleyXboxUtils.UTIL.distance(b.getLocation(), this.getLocation()) < Ball.radius / (widthScale))
+                        {
+
+                            //Sphere Collision
+                            Vector2 forceVector = BradleyXboxUtils.UTIL.magD(Ball.radius / (widthScale) - BradleyXboxUtils.UTIL.distance(this.getLocation(), b.getLocation()), BradleyXboxUtils.UTIL.getDirectionTward(this.getLocation(), b.getLocation()));
+                            b.pushBall(forceVector * .4f);
+                            pushBall(-1 * forceVector * .4f);
+                        }
+                    }
+                }
+
                 if (location.X < AerialRobot.minXPosition * widthScale || location.X > AerialRobot.maxXPosition * widthScale || Math.Abs(location.X * widthScale - 893.6f) < 10 * widthScale && Math.Abs(location.Z - trussHeight) < 4)
                 {
                     launchPosition = location;
@@ -98,6 +115,7 @@ namespace AerialAssist
             {
                 inAir = true;
                 location = new Vector3(linked.getLocation().X, linked.getLocation().Y, linked.getBallHeight());
+                matrix.update(linked);
             }
         }
 

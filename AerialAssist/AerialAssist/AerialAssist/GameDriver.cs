@@ -31,7 +31,7 @@ namespace AerialAssist
         public GameDriver()
         {
             graphics = new GraphicsDeviceManager(this);
-            graphics.IsFullScreen = true;
+            graphics.IsFullScreen = false;
             Content.RootDirectory = "Content";
         }
 
@@ -68,7 +68,7 @@ namespace AerialAssist
             widthScale = (float)graphics.GraphicsDevice.Viewport.Width / field.Width;
             heightScale = (float)graphics.GraphicsDevice.Viewport.Height / field.Height;
 
-            Ball.trussHeight = trussHeight = 5;
+            Ball.trussHeight = trussHeight = 12;
             Ball.image = Content.Load<Texture2D>("sphere");
             Ball.radius = widthScale * 47f;
             Ball.growthConstant = .02f;
@@ -76,16 +76,22 @@ namespace AerialAssist
             Ball.ballAcceleration = 0.08f;
             Ball.bounceDecay = .32f;
             AerialRobot.launchPower = 2f;
+            ScoreMatrix.blueWhiteZone = .33f * widthScale * field.Width;
+            ScoreMatrix.redWhiteZone = .66f * widthScale * field.Width;
 
             Texture2D sonic = Content.Load<Texture2D>("robot2");
 
             robots = new List<Robot>();
-            robots.Add(new AerialRobot(sonic, new Vector2(.12f * widthScale, .12f * heightScale), new Vector2(widthScale * 100f, heightScale * 100f), Color.Red, 0f, 0f, new KeyboardInput(PlayerIndex.One), AerialRobot.McCannumDrive));
-            //robots.Add(new AerialRobot(sonic, new Vector2(.12f * widthScale, .12f * heightScale), new Vector2(widthScale * 200f, heightScale * 100f), Color.Red, (float)Math.PI, 0f, new KeyboardInput(PlayerIndex.Two), AerialRobot.McCannumDrive));
+            robots.Add(new AerialRobot(sonic, new Vector2(.12f * widthScale, .12f * heightScale), new Vector2(widthScale * 100f, heightScale * 100f), Color.Red, 0f, 0f, new KeyboardInput(PlayerIndex.One), AerialRobot.ArcadeDrive));
+            robots.Add(new AerialRobot(sonic, new Vector2(.12f * widthScale, .12f * heightScale), new Vector2(widthScale * 200f, heightScale * 100f), Color.Blue, (float)Math.PI, 0f, new KeyboardInput(PlayerIndex.Two), AerialRobot.ArcadeDrive));
+            robots.Add(new AerialRobot(sonic, new Vector2(.12f * widthScale, .12f * heightScale), new Vector2(widthScale * 100f, heightScale * 150f), Color.Red, 0f, 0f, new KeyboardInput(PlayerIndex.One), AerialRobot.ArcadeDrive));
+            robots.Add(new AerialRobot(sonic, new Vector2(.12f * widthScale, .12f * heightScale), new Vector2(widthScale * 200f, heightScale * 150f), Color.Blue, (float)Math.PI, 0f, new KeyboardInput(PlayerIndex.Two), AerialRobot.ArcadeDrive));
+            robots.Add(new AerialRobot(sonic, new Vector2(.12f * widthScale, .12f * heightScale), new Vector2(widthScale * 100f, heightScale * 200f), Color.Red, 0f, 0f, new KeyboardInput(PlayerIndex.One), AerialRobot.ArcadeDrive));
+            robots.Add(new AerialRobot(sonic, new Vector2(.12f * widthScale, .12f * heightScale), new Vector2(widthScale * 200f, heightScale * 200f), Color.Blue, (float)Math.PI, 0f, new KeyboardInput(PlayerIndex.Two), AerialRobot.ArcadeDrive));
 
             balls = new List<Ball>();
-            balls.Add(new Ball(robots.ElementAt<Robot>(0), Color.Red));
-            //balls.Add(new Ball(robots.ElementAt<Robot>(1), Color.Blue));
+            balls.Add(new Ball(robots.ElementAt<Robot>(0), Color.Red, robots.ElementAt<Robot>(2), robots.ElementAt<Robot>(4)));
+            balls.Add(new Ball(robots.ElementAt<Robot>(1), Color.Blue, robots.ElementAt<Robot>(3), robots.ElementAt<Robot>(5)));
         }
 
         /// <summary>
