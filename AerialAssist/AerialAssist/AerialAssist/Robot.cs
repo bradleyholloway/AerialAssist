@@ -18,6 +18,6 @@ namespace AerialAssist
         float getBallHeight();
         void run(List<Robot> robots, List<Ball> balls, float widthScale, float heightScale);
         void linkBall(Ball ball);
-        int pushRobot(Vector2 location, Vector2 velocityOfImpact);
+        int pushRobot(Vector2 location, Vector2 velocityOfImpact, List<Robot> robots);
     }
 }

@@ -157,11 +157,11 @@ namespace AerialAssist
                     {
                         if (UTIL.distance(r.getLocation(), location) <= Math.Sqrt(robotImage.Width*robotImage.Width * scale.X*scale.X + robotImage.Height*robotImage.Height*scale.Y*scale.Y))
                         {
-                            if (r.pushRobot(location, velocity) == 1)
+                            if (r.pushRobot(location, velocity, robots) == 1)
                             {
                                 velocity /= 2f;
                             }
-                            else if (r.pushRobot(location, velocity) == 0)
+                            else if (r.pushRobot(location, velocity, robots) == 0)
                             {
                                 velocity *= 0f;
                             }
@@ -190,21 +190,41 @@ namespace AerialAssist
             }
         }
 
-        int Robot.pushRobot(Vector2 locationStart, Vector2 velocityOfImpact)
+        int Robot.pushRobot(Vector2 locationStart, Vector2 velocityOfImpact, List<Robot> robots)
         {
             Vector2 tempLocation = location + velocityOfImpact / 2;
 
             if (!(tempLocation.X > minXPosition * widthScale && tempLocation.X < maxXPosition * widthScale && tempLocation.Y > minYPosition * heightScale && tempLocation.Y < maxYPosition * heightScale))
             {
+                
+                //color = Color.Red;
                 return 0;
             }
-            if (Math.Abs(UTIL.getDirectionTward(locationStart, location) - UTIL.getDirectionTward(Vector2.Zero, velocityOfImpact)) < Math.PI)
+            if (Math.Abs(UTIL.getDirectionTward(locationStart, location) - UTIL.getDirectionTward(Vector2.Zero, velocityOfImpact)) > Math.PI * 2 / 3)
             {
+
+                //color = Color.Aqua;
                 return -1;
             }
 
-            location += velocityOfImpact / 2;
+            foreach (Robot r in robots)
+            {
+                if (!r.Equals(this) && !r.getLocation().Equals(locationStart))
+                {
+                    if (UTIL.distance(r.getLocation(), location) <= Math.Sqrt(robotImage.Width * robotImage.Width * scale.X * scale.X + robotImage.Height * robotImage.Height * scale.Y * scale.Y))
+                    {
+                        return 0;
+                    }
+                }
+            }
 
+            
+
+            location += velocityOfImpact / 2;
+            velocity += velocityOfImpact / 2;
+
+            
+            //color = Color.Green;
             return 1;
         }
 
