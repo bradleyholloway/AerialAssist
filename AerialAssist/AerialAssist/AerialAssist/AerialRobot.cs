@@ -162,7 +162,7 @@ namespace AerialAssist
                     }
                     else
                     {
-                        b.pushBall(UTIL.magD((Ball.radius/2 - UTIL.distance(location, b.getLocation())) * .07f, UTIL.getDirectionTward(location, b.getLocation())));
+                        b.pushBall(UTIL.magD(velocity.Length() * 1f + 1, UTIL.getDirectionTward(location, b.getLocation())));
                     }
                 }
             }

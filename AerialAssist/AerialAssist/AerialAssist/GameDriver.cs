@@ -19,11 +19,13 @@ namespace AerialAssist
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+        SpriteFont timesNewRoman;
 
         Texture2D field;
         Texture2D truss;
         float widthScale, heightScale;
         float trussHeight;
+        int redScore, blueScore;
 
         List<Robot> robots;
         List<Ball> balls;
@@ -63,8 +65,10 @@ namespace AerialAssist
         {
             
             spriteBatch = new SpriteBatch(GraphicsDevice);
+            timesNewRoman = Content.Load<SpriteFont>("TimesNewRoman");
             field = Content.Load<Texture2D>("Field");
             truss = Content.Load<Texture2D>("Truss");
+            redScore = blueScore = 0;
             widthScale = (float)graphics.GraphicsDevice.Viewport.Width / field.Width;
             heightScale = (float)graphics.GraphicsDevice.Viewport.Height / field.Height;
 
@@ -74,7 +78,7 @@ namespace AerialAssist
             Ball.growthConstant = .02f;
             Ball.decayConstant = .006f;
             Ball.ballAcceleration = 0.08f;
-            Ball.bounceDecay = .32f;
+            Ball.bounceDecay = .52f;
             AerialRobot.launchPower = 2f;
             ScoreMatrix.blueWhiteZone = .33f * widthScale * field.Width;
             ScoreMatrix.redWhiteZone = .66f * widthScale * field.Width;
@@ -118,10 +122,27 @@ namespace AerialAssist
             {
                 r.run(robots, balls, widthScale, heightScale);
             }
-            foreach (Ball b in balls)
+            for(int ball = 0; ball < balls.Count; ball++)
             {
-                b.run(balls, widthScale, heightScale);
+                Ball b = balls.ElementAt<Ball>(ball);
+                int result = b.run(balls, widthScale, heightScale);
+                if (result != -1)
+                {
+                    balls.Remove(b);
+                    if (b.getColor().Equals(Color.Red))
+                    {
+                        redScore += result;
+                        balls.Add(new Ball(robots.ElementAt<Robot>(0), Color.Red, robots.ElementAt<Robot>(2), robots.ElementAt<Robot>(4)));
+                    }
+                    else
+                    {
+                        blueScore += result;
+                        balls.Add(new Ball(robots.ElementAt<Robot>(1), Color.Blue, robots.ElementAt<Robot>(3), robots.ElementAt<Robot>(5)));
+                    }
+                    ball--;
+                }
             }
+            //redScore = balls.ElementAt<Ball>(0).getAssistBonus()+"";
             base.Update(gameTime);
         }
 
@@ -150,9 +171,9 @@ namespace AerialAssist
             }
 
             //Draw the Score and Time
-            //
-            //
-            //
+            spriteBatch.DrawString(timesNewRoman, blueScore + "", new Vector2(widthScale * 20f, heightScale * 20f), Color.Blue);
+            spriteBatch.DrawString(timesNewRoman, redScore + "", new Vector2(graphics.GraphicsDevice.Viewport.Width - widthScale * 60f, heightScale * 20f), Color.Red);
+            
 
             spriteBatch.Draw(truss, new Vector2(0, 0), null, Color.White, 0f, Vector2.Zero, new Vector2(widthScale, heightScale), SpriteEffects.None, 0f);
 
@@ -163,6 +184,7 @@ namespace AerialAssist
                     spriteBatch.Draw(b.getImage(), b.getLocation(), null, b.getColor(), b.getRotation(), b.getOrigin(), b.getScale(), SpriteEffects.None, 0f);
                 }
             }
+            
 
             spriteBatch.End();
 

@@ -37,7 +37,7 @@ namespace AerialAssist
             this.matrix = new ScoreMatrix(startLink, r2, r3);
         }
 
-        public void run(List<Ball> balls, float widthScale, float heightScale)
+        public int run(List<Ball> balls, float widthScale, float heightScale)
         {
             float x, y, z;
             if (isFree || linked == null)
@@ -87,8 +87,12 @@ namespace AerialAssist
                         }
                     }
                 }
+                if ((location.X < AerialRobot.minXPosition * widthScale || location.X > AerialRobot.maxXPosition * widthScale) && location.Z >= trussHeight)
+                {
+                    return matrix.getAssistBonus() + 10;
+                }
 
-                if (location.X < AerialRobot.minXPosition * widthScale || location.X > AerialRobot.maxXPosition * widthScale || Math.Abs(location.X * widthScale - 893.6f) < 10 * widthScale && Math.Abs(location.Z - trussHeight) < 4)
+                if (location.X < AerialRobot.minXPosition * widthScale || location.X > AerialRobot.maxXPosition * widthScale || Math.Abs(location.X * widthScale - 544.2f) < 20 * widthScale && Math.Abs(location.Z - trussHeight) < 4)
                 {
                     launchPosition = location;
                     float velocity = launchVelocity.Z - ballAcceleration * timeSinceLaunch;
@@ -99,6 +103,12 @@ namespace AerialAssist
                     launchVelocity = new Vector3(-launchVelocity.X * (1 - decayConstant * timeSinceLaunch), launchVelocity.Y * (1 - decayConstant * timeSinceLaunch), -(velocity + bounceDecay));
                     timeSinceLaunch = 0f;
                 }
+
+                if (location.X / widthScale < AerialRobot.minXPosition - Ball.radius/2 || location.X / widthScale > AerialRobot.maxXPosition + Ball.radius/2)
+                {
+                    return 0;
+                }
+
                 if (location.Y < AerialRobot.minYPosition * heightScale || location.Y > AerialRobot.maxYPosition * heightScale)
                 {
                     launchPosition = location;
@@ -110,6 +120,12 @@ namespace AerialAssist
                     launchVelocity = new Vector3(launchVelocity.X * (1 - decayConstant * timeSinceLaunch), -launchVelocity.Y * (1 - decayConstant * timeSinceLaunch), -(velocity + bounceDecay));
                     timeSinceLaunch = 0f;
                 }
+
+                if (location.Y < AerialRobot.minYPosition * heightScale - Ball.radius/2 || location.Y > AerialRobot.maxYPosition * heightScale + Ball.radius/2)
+                {
+                    return 0;
+                }
+
             }
             else
             {
@@ -117,10 +133,16 @@ namespace AerialAssist
                 location = new Vector3(linked.getLocation().X, linked.getLocation().Y, linked.getBallHeight());
                 matrix.update(linked);
             }
+            return -1;
         }
 
         public void pushBall(Vector2 contact)
         {
+            if (contact.Length() > 5)
+            {
+                contact = BradleyXboxUtils.UTIL.magD(5, BradleyXboxUtils.UTIL.getDirectionTward(Vector2.Zero, contact));
+            }
+            contact *= .5f;
             float velocity = launchVelocity.Z - ballAcceleration * timeSinceLaunch;
             if (getHeight() == 0f)
             {
@@ -186,6 +208,11 @@ namespace AerialAssist
         public float getHeight()
         {
             return location.Z;
+        }
+
+        public int getAssistBonus()
+        {
+            return matrix.getAssistBonus();
         }
     }
 }
