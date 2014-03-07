@@ -23,6 +23,7 @@ namespace AerialAssist
         public static float minYPosition = 0f;
         public static float maxYPosition = 1f;
         public static float launchPower = 1f;
+        private static float widthScale, heightScale;
 
         private Texture2D robotImage;
         private Vector2 scale;
@@ -85,7 +86,9 @@ namespace AerialAssist
 
         void Robot.run(List<Robot> robots, List<Ball> balls, float widthScale, float heightScale)
         {
-            drive(robots, balls, widthScale, heightScale);
+            AerialRobot.widthScale = widthScale;
+            AerialRobot.heightScale = heightScale;
+            drive(robots, balls);
 
             if (driverInput.getRightActionButton())
             {
@@ -98,7 +101,7 @@ namespace AerialAssist
 
         }
 
-        private void drive(List<Robot> robots, List<Ball> balls, float widthScale, float heightScale)
+        private void drive(List<Robot> robots, List<Ball> balls)
         {
             Vector2 tempLocation = location;
             float tempRotation = rotation;
@@ -147,13 +150,32 @@ namespace AerialAssist
             if (tempLocation.X > minXPosition * widthScale && tempLocation.X < maxXPosition * widthScale && tempLocation.Y > minYPosition * heightScale && tempLocation.Y < maxYPosition * heightScale)
             {
                 velocity = tempLocation - location;
-                location = tempLocation;
+
+                foreach (Robot r in robots)
+                {
+                    if (!r.Equals(this))
+                    {
+                        if (UTIL.distance(r.getLocation(), location) <= Math.Sqrt(robotImage.Width*robotImage.Width * scale.X*scale.X + robotImage.Height*robotImage.Height*scale.Y*scale.Y))
+                        {
+                            if (r.pushRobot(location, velocity) == 1)
+                            {
+                                velocity /= 2f;
+                            }
+                            else if (r.pushRobot(location, velocity) == 0)
+                            {
+                                velocity *= 0f;
+                            }
+                            
+                        }
+                    }
+                }
+                location += velocity;
             }
             rotation = tempRotation;
 
             foreach (Ball b in balls)
             {
-                if(!b.Equals(activeBall) && UTIL.distance(location, b.getLocation()) < Ball.radius/2 && b.getHeight() < .1f) 
+                if(!b.Equals(activeBall) && UTIL.distance(location, b.getLocation()) < Ball.radius/2 && b.getHeight() < .1f && b.getIsFree()) 
                 {
                     if (driverInput.getBottomActionButton() && Math.Abs(UTIL.normalizeDirection(rotation) - UTIL.normalizeDirection(UTIL.getDirectionTward(location, b.getLocation()))) < .35 && activeBall== null)
                     {
@@ -167,7 +189,24 @@ namespace AerialAssist
                 }
             }
         }
-        
+
+        int Robot.pushRobot(Vector2 locationStart, Vector2 velocityOfImpact)
+        {
+            Vector2 tempLocation = location + velocityOfImpact / 2;
+
+            if (!(tempLocation.X > minXPosition * widthScale && tempLocation.X < maxXPosition * widthScale && tempLocation.Y > minYPosition * heightScale && tempLocation.Y < maxYPosition * heightScale))
+            {
+                return 0;
+            }
+            if (Math.Abs(UTIL.getDirectionTward(locationStart, location) - UTIL.getDirectionTward(Vector2.Zero, velocityOfImpact)) < Math.PI)
+            {
+                return -1;
+            }
+
+            location += velocityOfImpact / 2;
+
+            return 1;
+        }
 
         void Robot.linkBall(Ball b)
         {

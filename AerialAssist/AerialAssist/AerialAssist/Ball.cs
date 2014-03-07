@@ -87,12 +87,12 @@ namespace AerialAssist
                         }
                     }
                 }
-                if ((location.X < AerialRobot.minXPosition * widthScale || location.X > AerialRobot.maxXPosition * widthScale) && location.Z >= trussHeight)
+                if ((location.X < AerialRobot.minXPosition * widthScale || location.X > AerialRobot.maxXPosition * widthScale) && location.Z >= trussHeight * 3/2 && location.Z <= trussHeight * 6/2)
                 {
                     return matrix.getAssistBonus() + 10;
                 }
 
-                if (location.X < AerialRobot.minXPosition * widthScale || location.X > AerialRobot.maxXPosition * widthScale || Math.Abs(location.X * widthScale - 544.2f) < 20 * widthScale && Math.Abs(location.Z - trussHeight) < 4)
+                if (location.X < AerialRobot.minXPosition * widthScale || location.X > AerialRobot.maxXPosition * widthScale || Math.Abs(location.X / widthScale - 306.278f) < 10 * widthScale && Math.Abs(location.Z - trussHeight) < 4)
                 {
                     launchPosition = location;
                     float velocity = launchVelocity.Z - ballAcceleration * timeSinceLaunch;
@@ -104,7 +104,7 @@ namespace AerialAssist
                     timeSinceLaunch = 0f;
                 }
 
-                if (location.X / widthScale < AerialRobot.minXPosition - Ball.radius/2 || location.X / widthScale > AerialRobot.maxXPosition + Ball.radius/2)
+                if (location.X < AerialRobot.minXPosition * widthScale - Ball.radius/3 || location.X > AerialRobot.maxXPosition * widthScale + Ball.radius/3)
                 {
                     return 0;
                 }
@@ -141,6 +141,10 @@ namespace AerialAssist
             if (contact.Length() > 5)
             {
                 contact = BradleyXboxUtils.UTIL.magD(5, BradleyXboxUtils.UTIL.getDirectionTward(Vector2.Zero, contact));
+            }
+            if (contact.Length() < 1)
+            {
+                contact = BradleyXboxUtils.UTIL.magD(1, BradleyXboxUtils.UTIL.getDirectionTward(Vector2.Zero, contact));
             }
             contact *= .5f;
             float velocity = launchVelocity.Z - ballAcceleration * timeSinceLaunch;
@@ -208,6 +212,11 @@ namespace AerialAssist
         public float getHeight()
         {
             return location.Z;
+        }
+
+        public bool getIsFree()
+        {
+            return isFree;
         }
 
         public int getAssistBonus()
