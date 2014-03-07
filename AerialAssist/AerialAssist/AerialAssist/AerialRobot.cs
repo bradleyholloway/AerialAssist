@@ -24,19 +24,29 @@ namespace AerialAssist
         public static float maxYPosition = 1f;
         public static float launchPower = 1f;
         private static float widthScale, heightScale;
+        private static Random r = new Random();
 
         private Texture2D robotImage;
         private Vector2 scale;
         private Vector2 location;
         private Vector2 velocity;
         private Color color;
+        private PID drivePID;
+        private PID turnPID;
         private float rotation;
         private float ballH;
         private Input driverInput;
         private int driveMode;
         private Ball activeBall;
+        private bool CPU;
 
-        public AerialRobot(Texture2D robotImage, Vector2 scale, Vector2 location, Color color, float rotation, float ballH, Input driverInput, int driveMode)
+        private AIHandler aiHandler;
+        private AICommand previous;
+        private double cycles;
+        private PID aiDrivePID;
+        private PID aiTurnPID;
+
+        public AerialRobot(Texture2D robotImage, Vector2 scale, Vector2 location, Color color, float rotation, float ballH, Input driverInput, int driveMode, bool CPU)
         {
             this.robotImage = robotImage;
             this.scale = scale;
@@ -47,6 +57,19 @@ namespace AerialAssist
             this.driverInput = driverInput;
             this.driveMode = driveMode;
             this.activeBall = null;
+            this.CPU = CPU;
+            this.drivePID = new PID(.1,.05,.1,3);
+
+            if (CPU)
+            {
+                aiTurnPID = new PID(.05, .05, .05, .01);
+                aiDrivePID = new PID(.05, .05, .05, .01);
+                aiHandler = new AIHandler();
+                
+                aiHandler.putCommand(new AICommand(AICommand.driveCommand, new Vector2(100f * (r.Next(8)+1) , 100f * (r.Next(3)+1)), 300.0));
+                aiHandler.putCommand(new AICommand(AICommand.driveCommand, new Vector2(100f * (r.Next(8)+1) , 100f * (r.Next(3)+1)), 300.0));
+
+            }
         }
 
         Vector2 Robot.getLocation()
@@ -88,47 +111,111 @@ namespace AerialAssist
         {
             AerialRobot.widthScale = widthScale;
             AerialRobot.heightScale = heightScale;
-            drive(robots, balls);
-
-            if (driverInput.getRightActionButton())
-            {
-                if (activeBall != null)
-                {
-                    activeBall.launch(new Vector3(launchPower * (float)Math.Cos(rotation) + velocity.X, launchPower * (float)Math.Sin(rotation) + velocity.Y,2f));
-                    activeBall = null;
-                }
-            }
-
-        }
-
-        private void drive(List<Robot> robots, List<Ball> balls)
-        {
-            Vector2 tempLocation = location;
-            float tempRotation = rotation;
-            if (driveMode == ArcadeDrive)
-            {
-                float turnAxis = (float)driverInput.getRightX();
-                float powerAxis = (float)driverInput.getLeftY() * -ArcadeDriveConstant;
-
-                tempLocation = location + new Vector2(powerAxis * (float)Math.Cos(rotation), powerAxis * (float)Math.Sin(rotation));
-                tempRotation = rotation + turnAxis * turnConst;
-            }
-            else if (driveMode == FieldCentric)
+            if (!CPU)
             {
                 float turnAxis = (float)driverInput.getRightX();
                 float powerAxis = (float)driverInput.getLeftY();
                 float strafeAxis = (float)driverInput.getLeftX();
 
+                drive(robots, balls, turnAxis, powerAxis, strafeAxis);
+
+                if (driverInput.getRightActionButton())
+                {
+                    if (activeBall != null)
+                    {
+                        activeBall.launch(new Vector3(launchPower * (float)Math.Cos(rotation) + velocity.X, launchPower * (float)Math.Sin(rotation) + velocity.Y, 2f));
+                        activeBall = null;
+                    }
+                }
+            }
+            else
+            {
+                aiDrive(robots, balls);
+                aiLaunch();
+            }
+
+        }
+        private void aiDrive(List<Robot> robots, List<Ball> balls)
+        {
+            float turnAxis, strafeAxis, powerAxis;
+            turnAxis = strafeAxis = powerAxis = 0f;
+            AICommand command = aiHandler.get();
+            if (!command.Equals(previous))
+            {
+                cycles = 0;
+            }
+            cycles++;
+            if (cycles > command.getTimeout())
+            {
+                aiHandler.move();
+                command = aiHandler.get();
+                cycles = 0;
+            }
+
+            if (command.getType() == AICommand.driveCommand)
+            {
+                Vector2 target = (Vector2)command.getValue();
+                powerAxis = (float)aiDrivePID.calcPID(UTIL.distance(location, target));
+                aiTurnPID.setDesiredValue(UTIL.getDirectionTward(location, target));
+                turnAxis = (float)aiTurnPID.calcPID(rotation);
+                if (UTIL.distance(target, location) < 35)
+                {
+                    aiHandler.move();
+                }
+
+            }
+            else if (command.getType() == AICommand.fireCommand)
+            {
+                Boolean fire = (Boolean)command.getValue();
+            }
+            else if (command.getType() == AICommand.positionCommand)
+            {
+                Vector2 offSet = (Vector2)command.getValue();
+                Vector2 ballCoordinate = Vector2.Zero;
+                foreach (Ball b in balls)
+                {
+                    if (b.getColor().Equals(color))
+                    {
+                        ballCoordinate = b.getLocation();
+                    }
+                }
+                Vector2 target = ballCoordinate + offSet;
+
+                powerAxis = (float)aiDrivePID.calcPID(UTIL.distance(location, target));
+                aiTurnPID.setDesiredValue(UTIL.getDirectionTward(location, target));
+                turnAxis = (float)aiTurnPID.calcPID(rotation);
+
+            }
+            drive(robots, balls, turnAxis, powerAxis, strafeAxis);
+            previous = command;
+        }
+
+        private void aiLaunch()
+        {
+
+        }
+
+        private void drive(List<Robot> robots, List<Ball> balls, float turnAxis, float powerAxis, float strafeAxis)
+        {
+            powerAxis *= -1;
+            Vector2 tempLocation = location;
+            float tempRotation = rotation;
+            if (driveMode == ArcadeDrive)
+            {
+                
+                tempLocation = location + new Vector2(powerAxis * ArcadeDriveConstant * (float)Math.Cos(rotation), powerAxis * ArcadeDriveConstant * (float)Math.Sin(rotation));
+                tempRotation = rotation + turnAxis * turnConst;
+            }
+            else if (driveMode == FieldCentric)
+            {
+                
                 tempLocation = location + new Vector2(strafeAxis * McCannumDriveConstant, powerAxis * McCannumDriveConstant);
 
                 tempRotation = rotation + turnAxis * turnConst;
             }
             else if (driveMode == McCannumDrive)
             {
-                float turnAxis = (float)driverInput.getRightX();
-                float powerAxis = (float)-driverInput.getLeftY();
-                float strafeAxis = (float)driverInput.getLeftX();
-
+                
                 tempLocation = location + new Vector2(strafeAxis * (float)Math.Sin(rotation) * McCannumDriveConstant, -strafeAxis * (float)Math.Cos(rotation) * McCannumDriveConstant);
                 tempLocation+= new Vector2(powerAxis * McCannumDriveConstant * (float)Math.Cos(rotation), powerAxis * McCannumDriveConstant * (float)Math.Sin(rotation));
 
@@ -136,10 +223,7 @@ namespace AerialAssist
             }
             else if (driveMode == UnicornDrive)
             {
-                float turnAxis = (float)driverInput.getRightX();
-                float powerAxis = (float)-driverInput.getLeftY();
-                float strafeAxis = (float)driverInput.getLeftX();
-
+                
                 tempLocation = location + new Vector2(strafeAxis * (float)Math.Sin(rotation) * UnicornDriveConstant, -strafeAxis * (float)Math.Cos(rotation) * UnicornDriveConstant);
                 tempLocation += new Vector2(powerAxis * UnicornDriveConstant * (float)Math.Cos(rotation), powerAxis * UnicornDriveConstant * (float)Math.Sin(rotation));
 

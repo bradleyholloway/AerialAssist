@@ -108,6 +108,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AerialRobot.cs" />
+    <Compile Include="AICommand.cs" />
+    <Compile Include="AIHandler.cs" />
     <Compile Include="Ball.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
