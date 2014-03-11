@@ -37,6 +37,17 @@ namespace AerialAssist
             this.matrix = new ScoreMatrix(startLink, r2, r3);
         }
 
+        public Ball(Vector2 startPosition, Color color, Robot r1, Robot r2, Robot r3)
+        {
+            this.linked = null;
+            this.color = color;
+            this.isFree = true;
+            this.location = new Vector3(startPosition.X, startPosition.Y, 0);
+            this.launchPosition = location;
+            this.launchVelocity = Vector3.Zero;
+            this.matrix = new ScoreMatrix(r1, r2, r3);
+        }
+
         public int run(List<Ball> balls, float widthScale, float heightScale)
         {
             float x, y, z;
@@ -87,7 +98,7 @@ namespace AerialAssist
                         }
                     }
                 }
-                if ((location.X < AerialRobot.minXPosition * widthScale || location.X > AerialRobot.maxXPosition * widthScale) && location.Z >= trussHeight * 3/2 && location.Z <= trussHeight * 6/2)
+                if ((location.X < AerialRobot.minXPosition * widthScale && color.Equals(Color.Blue) || location.X > AerialRobot.maxXPosition * widthScale && color.Equals(Color.Red)) && location.Z >= trussHeight * 3/2 && location.Z <= trussHeight * 6/2)
                 {
                     return matrix.getAssistBonus() + 10;
                 }

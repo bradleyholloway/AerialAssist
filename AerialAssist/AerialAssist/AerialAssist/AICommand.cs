@@ -10,6 +10,8 @@ namespace AerialAssist
         public const int driveCommand = 1;
         public const int fireCommand = 2;
         public const int positionCommand = 3;
+        public const int passCommand = 5;
+        public const int defenseCommand = 6;
 
         Object value;
         int commandType;
