@@ -164,7 +164,7 @@ namespace AerialAssist
                 velocity = -bounceDecay*2;
             }
             launchPosition = location;
-            launchVelocity = new Vector3(contact.X + launchVelocity.X * (1 - timeSinceLaunch * decayConstant), contact.Y + launchVelocity.Y * (1 - timeSinceLaunch * decayConstant), -(velocity + bounceDecay));
+            launchVelocity = new Vector3(contact.X + launchVelocity.X * Math.Min((1 - timeSinceLaunch * decayConstant),0), contact.Y + launchVelocity.Y * Math.Min((1 - timeSinceLaunch * decayConstant),0), -(velocity + bounceDecay));
             timeSinceLaunch = 0f;
         }
 

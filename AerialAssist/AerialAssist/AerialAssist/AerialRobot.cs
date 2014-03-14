@@ -71,7 +71,7 @@ namespace AerialAssist
                 aiTurnPID = new PID(.05, .05, .05, .01);
                 aiTurnPID.setMinDoneCycles(20);
                 aiTurnPID.setDoneRange(.1);
-                aiDrivePID = new PID(.05, .05, .05, .01);
+                aiDrivePID = new PID(.05, 0, .05, .01);
                 aiHandler = new AIHandler();
 
                 if (AImode == StandardAI)

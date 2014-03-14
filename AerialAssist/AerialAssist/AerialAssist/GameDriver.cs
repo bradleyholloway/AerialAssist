@@ -113,6 +113,10 @@ namespace AerialAssist
             balls = new List<Ball>();
             balls.Add(new Ball(robots.ElementAt<Robot>(0), Color.Red, robots.ElementAt<Robot>(2), robots.ElementAt<Robot>(4)));
             balls.Add(new Ball(robots.ElementAt<Robot>(1), Color.Blue, robots.ElementAt<Robot>(3), robots.ElementAt<Robot>(5)));
+            balls.Add(new Ball(robots.ElementAt<Robot>(2), Color.Red, robots.ElementAt<Robot>(0), robots.ElementAt<Robot>(4)));
+            balls.Add(new Ball(robots.ElementAt<Robot>(3), Color.Blue, robots.ElementAt<Robot>(1), robots.ElementAt<Robot>(5)));
+            balls.Add(new Ball(robots.ElementAt<Robot>(4), Color.Red, robots.ElementAt<Robot>(0), robots.ElementAt<Robot>(2)));
+            balls.Add(new Ball(robots.ElementAt<Robot>(5), Color.Blue, robots.ElementAt<Robot>(1), robots.ElementAt<Robot>(3)));
 
             menuInput = new MenuInput(((GamePad.GetState(PlayerIndex.One).IsConnected) ? (Input)new ControllerInput(PlayerIndex.One) : (Input)new KeyboardInput()));
             menuIndex = 0;
@@ -180,12 +184,34 @@ namespace AerialAssist
                         if (b.getColor().Equals(Color.Red))
                         {
                             redScore += result;
-                            balls.Add(new Ball(new Vector2(200 * widthScale, 140 * heightScale), Color.Red, robots.ElementAt<Robot>(0), robots.ElementAt<Robot>(2), robots.ElementAt<Robot>(4)));
+                            bool redBall = false;
+                            foreach (Ball bb in balls)
+                            {
+                                if (bb.getColor().Equals(Color.Red))
+                                {
+                                    redBall = true;
+                                }
+                            }
+                            if (!redBall)
+                            {
+                                balls.Add(new Ball(new Vector2(120 * widthScale, 140 * heightScale), Color.Red, robots.ElementAt<Robot>(0), robots.ElementAt<Robot>(2), robots.ElementAt<Robot>(4)));
+                            }
                         }
                         else
                         {
                             blueScore += result;
-                            balls.Add(new Ball(new Vector2(400 * widthScale, 140 * heightScale), Color.Blue, robots.ElementAt<Robot>(1), robots.ElementAt<Robot>(3), robots.ElementAt<Robot>(5)));
+                            bool blueBall = false;
+                            foreach (Ball bb in balls)
+                            {
+                                if (bb.getColor().Equals(Color.Blue))
+                                {
+                                    blueBall = true;
+                                }
+                            }
+                            if (!blueBall)
+                            {
+                                balls.Add(new Ball(new Vector2(480 * widthScale, 140 * heightScale), Color.Blue, robots.ElementAt<Robot>(1), robots.ElementAt<Robot>(3), robots.ElementAt<Robot>(5)));
+                            }
                         }
                         ball--;
                     }
