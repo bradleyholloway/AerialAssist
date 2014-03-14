@@ -97,17 +97,17 @@ namespace AerialAssist
             AerialRobot.launchPower = 4f;
             AerialRobot.widthScale = widthScale;
             AerialRobot.heightScale = heightScale;
-            ScoreMatrix.blueWhiteZone = .33f * widthScale * field.Width;
-            ScoreMatrix.redWhiteZone = .66f * widthScale * field.Width;
+            ScoreMatrix.blueWhiteZone = .35f * widthScale * field.Width;
+            ScoreMatrix.redWhiteZone = .67f * widthScale * field.Width;
 
             Texture2D sonic = Content.Load<Texture2D>("robot2");
 
             robots = new List<Robot>();
-            robots.Add(new AerialRobot(sonic, new Vector2(.12f * widthScale, .12f * heightScale), new Vector2(widthScale * 500f, heightScale * 100f), Color.Red, .00001f, 0f, new KeyboardInput(PlayerIndex.One), AerialRobot.ArcadeDrive, !keyboard1, AerialRobot.StandardAI));
+            robots.Add(new AerialRobot(sonic, new Vector2(.12f * widthScale, .12f * heightScale), new Vector2(widthScale * 430f, heightScale * 100f), Color.Red, .00001f, 0f, new KeyboardInput(PlayerIndex.One), AerialRobot.ArcadeDrive, !keyboard1, AerialRobot.StandardAI));
             robots.Add(new AerialRobot(sonic, new Vector2(.12f * widthScale, .12f * heightScale), new Vector2(widthScale * 200f, heightScale * 100f), Color.Blue, (float)Math.PI+.00001f, 0f, new KeyboardInput(PlayerIndex.Two), AerialRobot.ArcadeDrive, !keyboard2, AerialRobot.StandardAI));
-            robots.Add(new AerialRobot(sonic, new Vector2(.12f * widthScale, .12f * heightScale), new Vector2(widthScale * 500f, heightScale * 150f), Color.Red, .00001f, 0f, new ControllerInput(PlayerIndex.One), AerialRobot.ArcadeDrive, !GamePad.GetState(PlayerIndex.One).IsConnected, AerialRobot.StandardAI));
+            robots.Add(new AerialRobot(sonic, new Vector2(.12f * widthScale, .12f * heightScale), new Vector2(widthScale * 430f, heightScale * 150f), Color.Red, .00001f, 0f, new ControllerInput(PlayerIndex.One), AerialRobot.ArcadeDrive, !GamePad.GetState(PlayerIndex.One).IsConnected, AerialRobot.StandardAI));
             robots.Add(new AerialRobot(sonic, new Vector2(.12f * widthScale, .12f * heightScale), new Vector2(widthScale * 200f, heightScale * 150f), Color.Blue, (float)Math.PI + .00001f, 0f, new ControllerInput(PlayerIndex.Two), AerialRobot.ArcadeDrive, !GamePad.GetState(PlayerIndex.Two).IsConnected, AerialRobot.StandardAI));
-            robots.Add(new AerialRobot(sonic, new Vector2(.12f * widthScale, .12f * heightScale), new Vector2(widthScale * 500f, heightScale * 200f), Color.Red, .00001f, 0f, new ControllerInput(PlayerIndex.Three), AerialRobot.ArcadeDrive, !GamePad.GetState(PlayerIndex.Three).IsConnected, AerialRobot.StandardAI));
+            robots.Add(new AerialRobot(sonic, new Vector2(.12f * widthScale, .12f * heightScale), new Vector2(widthScale * 430f, heightScale * 200f), Color.Red, .00001f, 0f, new ControllerInput(PlayerIndex.Three), AerialRobot.ArcadeDrive, !GamePad.GetState(PlayerIndex.Three).IsConnected, AerialRobot.StandardAI));
             robots.Add(new AerialRobot(sonic, new Vector2(.12f * widthScale, .12f * heightScale), new Vector2(widthScale * 200f, heightScale * 200f), Color.Blue, (float)Math.PI + .00001f, 0f, new ControllerInput(PlayerIndex.Four), AerialRobot.ArcadeDrive, !GamePad.GetState(PlayerIndex.Four).IsConnected, AerialRobot.StandardAI));
 
             balls = new List<Ball>();
