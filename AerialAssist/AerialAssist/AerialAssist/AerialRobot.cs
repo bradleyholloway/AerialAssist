@@ -210,7 +210,7 @@ namespace AerialAssist
 
                 drive(robots, balls, turnAxis, powerAxis, strafeAxis);
 
-                if (driverInput.getRightActionButton())
+                if (driverInput.getRightTrigger() > .5)
                 {
                     if (activeBall != null)
                     {
@@ -466,7 +466,7 @@ namespace AerialAssist
                 {
                     if (!r.Equals(this))
                     {
-                        if (UTIL.distance(r.getLocation(), location) <= Math.Sqrt(robotImage.Width*robotImage.Width * scale.X*scale.X + robotImage.Height*robotImage.Height*scale.Y*scale.Y))
+                        if (UTIL.distance(r.getLocation(), location) <= Math.Sqrt(robotImage.Width*robotImage.Width * scale.X*scale.X + robotImage.Height*robotImage.Height*scale.Y*scale.Y) * .8f) 
                         {
                             if (r.pushRobot(location, velocity, robots) == 1)
                             {
@@ -488,7 +488,7 @@ namespace AerialAssist
             {
                 if(!b.Equals(activeBall) && UTIL.distance(location, b.getLocation()) < Ball.radius/2 && b.getHeight() < .1f && b.getIsFree()) 
                 {
-                    if ((driverInput.getBottomActionButton() || (CPU && aiHandler.get().getType() != AICommand.defenseCommand)) && Math.Abs(UTIL.normalizeDirection(rotation) - UTIL.normalizeDirection(UTIL.getDirectionTward(location, b.getLocation()))) < .35 && activeBall== null)
+                    if ((driverInput.getLeftTrigger() > .5 || (CPU && aiHandler.get().getType() != AICommand.defenseCommand)) && Math.Abs(UTIL.normalizeDirection(rotation) - UTIL.normalizeDirection(UTIL.getDirectionTward(location, b.getLocation()))) < .6 && activeBall== null)
                     {
                         b.linkRobot(this);
                         activeBall = b;
