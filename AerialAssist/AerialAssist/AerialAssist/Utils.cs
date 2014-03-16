@@ -169,19 +169,32 @@ namespace BradleyXboxUtils
 
         public override double getLeftX()
         {
-            if (Keyboard.GetState().IsKeyDown(Keys.D))
-                return 1;
-            else if (Keyboard.GetState().IsKeyDown(Keys.A))
-                return -1;
-            return 0;
-        }
-        public override double getRightX()
-        {
             if (secondPlayer)
             {
                 if (Keyboard.GetState().IsKeyDown(Keys.D))
                     return 1;
                 else if (Keyboard.GetState().IsKeyDown(Keys.A))
+                    return -1;
+                else
+                    return 0;
+            }
+            else
+            {
+                if (Keyboard.GetState().IsKeyDown(Keys.Right))
+                    return 1;
+                else if (Keyboard.GetState().IsKeyDown(Keys.Left))
+                    return -1;
+                else
+                    return 0;
+            }
+        }
+        public override double getRightX()
+        {
+            if (secondPlayer)
+            {
+                if (Keyboard.GetState().IsKeyDown(Keys.E))
+                    return 1;
+                else if (Keyboard.GetState().IsKeyDown(Keys.Q))
                     return -1;
                 else
                     return 0;
@@ -225,7 +238,7 @@ namespace BradleyXboxUtils
         public override Boolean getBottomActionButton()
         {
             if (secondPlayer)
-                return Keyboard.GetState().IsKeyDown(Keys.LeftControl);
+                return Keyboard.GetState().IsKeyDown(Keys.Insert);
             else
                 return Keyboard.GetState().IsKeyDown(Keys.RightControl);
             //return GamePad.GetState(p).IsButtonDown(Buttons.A);
@@ -246,7 +259,7 @@ namespace BradleyXboxUtils
         public override Boolean getRightActionButton()
         {
             if (secondPlayer)
-                return Keyboard.GetState().IsKeyDown(Keys.LeftShift);
+                return Keyboard.GetState().IsKeyDown(Keys.PageUp);
             else
                 return Keyboard.GetState().IsKeyDown(Keys.RightAlt);
         }
@@ -310,12 +323,12 @@ namespace BradleyXboxUtils
         }
         public override double getRightTrigger()
         {
-            return boolToDouble(getRightBumper());
+            return boolToDouble(getRightActionButton());
             //return GamePad.GetState(p).Triggers.Right;
         }
         public override double getLeftTrigger()
         {
-            return 0.0;
+            return boolToDouble(getBottomActionButton());
             //return GamePad.GetState(p).Triggers.Left;
         }
         public override Vector2 getLeftJoystick()

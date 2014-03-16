@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using BradleyXboxUtils;
+using System.Timers;
 
 namespace AerialAssist
 {
@@ -20,10 +21,12 @@ namespace AerialAssist
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         SpriteFont timesNewRoman;
+        double startTime, remainingTime;
         bool keyboard1, keyboard2;
         MenuInput menuInput;
         List<MenuItem> menuItems;
         int menuIndex;
+        bool firstCycle;
 
         int gameState = 0;
         Texture2D field;
@@ -105,8 +108,8 @@ namespace AerialAssist
             robots = new List<Robot>();
             robots.Add(new AerialRobot(sonic, new Vector2(.12f * widthScale, .12f * heightScale), new Vector2(widthScale * 320f, heightScale * 100f), Color.Red, .00001f, 0f, new KeyboardInput(PlayerIndex.One), AerialRobot.ArcadeDrive, !keyboard1, AerialRobot.StandardAI));
             robots.Add(new AerialRobot(sonic, new Vector2(.12f * widthScale, .12f * heightScale), new Vector2(widthScale * 260f, heightScale * 100f), Color.Blue, (float)Math.PI+.00001f, 0f, new KeyboardInput(PlayerIndex.Two), AerialRobot.ArcadeDrive, !keyboard2, AerialRobot.StandardAI));
-            robots.Add(new AerialRobot(sonic, new Vector2(.12f * widthScale, .12f * heightScale), new Vector2(widthScale * 320f, heightScale * 150f), Color.Red, .00001f, 0f, new ControllerInput(PlayerIndex.One), AerialRobot.ArcadeDrive, !GamePad.GetState(PlayerIndex.One).IsConnected, AerialRobot.StandardAI));
-            robots.Add(new AerialRobot(sonic, new Vector2(.12f * widthScale, .12f * heightScale), new Vector2(widthScale * 260f, heightScale * 150f), Color.Blue, (float)Math.PI + .00001f, 0f, new ControllerInput(PlayerIndex.Two), AerialRobot.ArcadeDrive, !GamePad.GetState(PlayerIndex.Two).IsConnected, AerialRobot.StandardAI));
+            robots.Add(new AerialRobot(sonic, new Vector2(.12f * widthScale, .12f * heightScale), new Vector2(widthScale * 320f, heightScale * 150f), Color.Red, .00001f, 0f, new ControllerInput(PlayerIndex.One), AerialRobot.McCannumDrive, !GamePad.GetState(PlayerIndex.One).IsConnected, AerialRobot.StandardAI));
+            robots.Add(new AerialRobot(sonic, new Vector2(.12f * widthScale, .12f * heightScale), new Vector2(widthScale * 260f, heightScale * 150f), Color.Blue, (float)Math.PI + .00001f, 0f, new ControllerInput(PlayerIndex.Two), AerialRobot.UnicornDrive, !GamePad.GetState(PlayerIndex.Two).IsConnected, AerialRobot.StandardAI));
             robots.Add(new AerialRobot(sonic, new Vector2(.12f * widthScale, .12f * heightScale), new Vector2(widthScale * 320f, heightScale * 200f), Color.Red, .00001f, 0f, new ControllerInput(PlayerIndex.Three), AerialRobot.ArcadeDrive, !GamePad.GetState(PlayerIndex.Three).IsConnected, AerialRobot.StandardAI));
             robots.Add(new AerialRobot(sonic, new Vector2(.12f * widthScale, .12f * heightScale), new Vector2(widthScale * 260f, heightScale * 200f), Color.Blue, (float)Math.PI + .00001f, 0f, new ControllerInput(PlayerIndex.Four), AerialRobot.ArcadeDrive, !GamePad.GetState(PlayerIndex.Four).IsConnected, AerialRobot.StandardAI));
 
@@ -120,6 +123,7 @@ namespace AerialAssist
 
             menuInput = new MenuInput(((GamePad.GetState(PlayerIndex.One).IsConnected) ? (Input)new ControllerInput(PlayerIndex.One) : (Input)new KeyboardInput()));
             menuIndex = 0;
+            firstCycle = true;
 
         }
 
@@ -170,6 +174,19 @@ namespace AerialAssist
             }
             else if (gameState == 1)
             {
+                if (firstCycle)
+                {
+                    startTime = gameTime.TotalGameTime.TotalSeconds;
+                    
+                }
+                firstCycle = false;
+                remainingTime =  Math.Round((120 - (gameTime.TotalGameTime.TotalSeconds - startTime)), 0);
+
+                if (remainingTime == 0)
+                {
+                    gameState = 5;
+                }
+
                 foreach (Robot r in robots)
                 {
                     r.run(robots, balls, widthScale, heightScale);
@@ -178,6 +195,16 @@ namespace AerialAssist
                 {
                     Ball b = balls.ElementAt<Ball>(ball);
                     int result = b.run(balls, widthScale, heightScale);
+                    int penalty = b.getPenaltyPoints();
+                    if (b.getColor().Equals(Color.Red))
+                    {
+                        redScore += penalty;
+                    }
+                    else
+                    {
+                        blueScore += penalty;
+                    }
+                    
                     if (result != -1)
                     {
                         balls.Remove(b);
@@ -238,6 +265,14 @@ namespace AerialAssist
                 gameState = 1;
                 LoadContent();
             }
+            else if (gameState == 5)
+            {
+                menuInput.run();
+                if (menuInput.getAction() != 0)
+                {
+                    gameState = 0;
+                }
+            }
             //redScore = balls.ElementAt<Ball>(0).getAssistBonus()+"";
             base.Update(gameTime);
         }
@@ -270,12 +305,6 @@ namespace AerialAssist
                 {
                     spriteBatch.Draw(b.getImage(), b.getLocation(), null, b.getColor(), b.getRotation(), b.getOrigin(), b.getScale(), SpriteEffects.None, 0f);
                 }
-
-                //Draw the Score and Time
-                spriteBatch.DrawString(timesNewRoman, blueScore + "", new Vector2(widthScale * 20f, heightScale * 20f), Color.Blue);
-                spriteBatch.DrawString(timesNewRoman, redScore + "", new Vector2(graphics.GraphicsDevice.Viewport.Width - widthScale * 60f, heightScale * 20f), Color.Red);
-
-
                 spriteBatch.Draw(truss, new Vector2(0, 0), null, Color.White, 0f, Vector2.Zero, new Vector2(widthScale, heightScale), SpriteEffects.None, 0f);
 
                 foreach (Ball b in balls)
@@ -285,6 +314,12 @@ namespace AerialAssist
                         spriteBatch.Draw(b.getImage(), b.getLocation(), null, b.getColor(), b.getRotation(), b.getOrigin(), b.getScale(), SpriteEffects.None, 0f);
                     }
                 }
+
+                //Draw the Score and Time
+                spriteBatch.DrawString(timesNewRoman, blueScore + "", new Vector2(widthScale * 20f, heightScale * 20f), Color.Blue);
+                spriteBatch.DrawString(timesNewRoman, redScore + "", new Vector2(graphics.GraphicsDevice.Viewport.Width - widthScale * 60f, heightScale * 20f), Color.Red);
+                spriteBatch.DrawString(timesNewRoman, remainingTime + "", new Vector2(graphics.GraphicsDevice.Viewport.Width / 2 - 30f * widthScale, heightScale * 20f), Color.White);
+
             }
 
             if (gameState == 0)
@@ -294,6 +329,14 @@ namespace AerialAssist
                     spriteBatch.DrawString(timesNewRoman, m.text(), m.location(), m.color());
                 }
                 spriteBatch.Draw(Ball.image, menuItems.ElementAt<MenuItem>(menuIndex).location() + new Vector2(-45,5), null, Color.Red, 0f, Vector2.Zero, new Vector2(.2f, .2f), SpriteEffects.None, 0f);
+            }
+            if (gameState == 5)
+            {
+                spriteBatch.DrawString(timesNewRoman, "Match Results", new Vector2(graphics.GraphicsDevice.Viewport.Width/2 - 80f * widthScale, heightScale * 25f), Color.White);
+                spriteBatch.DrawString(timesNewRoman, "Red Alliance", new Vector2(graphics.GraphicsDevice.Viewport.Width / 4 * 3 - 50f * widthScale, heightScale * 50f), Color.Red);
+                spriteBatch.DrawString(timesNewRoman, "Blue Alliance", new Vector2(graphics.GraphicsDevice.Viewport.Width / 4 - 95f * widthScale, heightScale * 50f), Color.Blue);
+                spriteBatch.DrawString(timesNewRoman, redScore + "", new Vector2(graphics.GraphicsDevice.Viewport.Width / 4 * 3 - 15f * widthScale, heightScale * 85f), Color.Red);
+                spriteBatch.DrawString(timesNewRoman, blueScore + "", new Vector2(graphics.GraphicsDevice.Viewport.Width / 4 - 30f * widthScale, heightScale * 85f), Color.Blue);
             }
             
 

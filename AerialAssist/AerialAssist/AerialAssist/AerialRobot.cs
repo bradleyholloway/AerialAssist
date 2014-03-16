@@ -76,23 +76,50 @@ namespace AerialAssist
 
                 if (AImode == StandardAI)
                 {
-                    aiHandler.putCommand(new AICommand(AICommand.positionCommand, new Vector2(0, 0), 300.0));
+                    aiHandler.putCommand(new AICommand(AICommand.positionCommand, new Vector2(0, 0), 300.0 + r.Next(100)));
                     if (r.Next(2) == 0)
                     {
 
-                        aiHandler.putCommand(new AICommand(AICommand.fireCommand, null, 300));
+                        aiHandler.putCommand(new AICommand(AICommand.fireCommand, null, 300 + r.Next(100)));
                     }
                     else
                     {
-                        aiHandler.putCommand(new AICommand(AICommand.passCommand, null, 300));
+                        aiHandler.putCommand(new AICommand(AICommand.passCommand, null, 300 + r.Next(100)));
                     }
                     aiHandler.putCommand(new AICommand(AICommand.positionCommand, new Vector2(200 * ((color.Equals(Color.Red)) ? 1 : -1), 0), 300.0));
                     aiHandler.putCommand(new AICommand(AICommand.positionCommand, new Vector2(0, 100 * (r.Next(2) * 2 - 1)), 300.0));
-                    aiHandler.putCommand(new AICommand(AICommand.positionCommand, new Vector2(0, 0), 300.0));
+                    aiHandler.putCommand(new AICommand(AICommand.positionCommand, new Vector2(0, 0), 300.0 + r.Next(100)));
 
-                    aiHandler.putCommand(new AICommand(AICommand.passCommand, null, 300));
-                    aiHandler.putCommand(new AICommand(AICommand.fireCommand, null, 300));
+                    aiHandler.putCommand(new AICommand(AICommand.passCommand, null, 300 + r.Next(100)));
+                    aiHandler.putCommand(new AICommand(AICommand.fireCommand, null, 300 + r.Next(100)));
+                    aiHandler.putCommand(new AICommand(AICommand.positionCommand, new Vector2(0, 0), 300.0 + r.Next(100)));
+                    if (r.Next(2) == 0)
+                    {
+
+                        aiHandler.putCommand(new AICommand(AICommand.fireCommand, null, 300 + r.Next(100)));
+                    }
+                    else
+                    {
+                        aiHandler.putCommand(new AICommand(AICommand.passCommand, null, 300 + r.Next(100)));
+                    }
+                    aiHandler.putCommand(new AICommand(AICommand.fireCommand, null, 300 + r.Next(100)));
+                    bool high = r.Next(2) == 1;
+                    Vector2 corner = new Vector2((300 + r.Next(200) - 100) * widthScale, ((high) ? 1:0) * 220 * heightScale + 50);
+                    aiHandler.putCommand(new AICommand(AICommand.driveCommand, corner, 200 + r.Next(100)));
                     aiHandler.putCommand(new AICommand(AICommand.positionCommand, new Vector2(0, 0), 300.0));
+                    if (r.Next(2) == 0)
+                    {
+
+                        aiHandler.putCommand(new AICommand(AICommand.fireCommand, null, 300 + r.Next(100)));
+                    }
+                    else
+                    {
+                        aiHandler.putCommand(new AICommand(AICommand.passCommand, null, 300 + r.Next(100)));
+                    }
+                    aiHandler.putCommand(new AICommand(AICommand.fireCommand, null, 300 + r.Next(100)));
+                    corner = new Vector2((300 + r.Next(200) - 100) * widthScale, (r.Next(2)) * 220 * heightScale + 50);
+                    aiHandler.putCommand(new AICommand(AICommand.driveCommand, corner, 200 + r.Next(100)));
+                    aiHandler.putCommand(new AICommand(AICommand.positionCommand, new Vector2(0, 0), 300.0 + r.Next(100)));
                     if (r.Next(2) == 0)
                     {
 
@@ -102,34 +129,8 @@ namespace AerialAssist
                     {
                         aiHandler.putCommand(new AICommand(AICommand.passCommand, null, 300));
                     }
-                    aiHandler.putCommand(new AICommand(AICommand.fireCommand, null, 300));
-                    Vector2 corner = new Vector2(300 * widthScale, (r.Next(2)) * 220 * heightScale + 50);
-                    aiHandler.putCommand(new AICommand(AICommand.driveCommand, corner, 200));
-                    aiHandler.putCommand(new AICommand(AICommand.positionCommand, new Vector2(0, 0), 300.0));
-                    if (r.Next(2) == 0)
-                    {
-
-                        aiHandler.putCommand(new AICommand(AICommand.fireCommand, null, 300));
-                    }
-                    else
-                    {
-                        aiHandler.putCommand(new AICommand(AICommand.passCommand, null, 300));
-                    }
-                    aiHandler.putCommand(new AICommand(AICommand.fireCommand, null, 300));
-                    corner = new Vector2(300 * widthScale, (r.Next(2)) * 220 * heightScale + 50);
-                    aiHandler.putCommand(new AICommand(AICommand.driveCommand, corner, 200));
-                    aiHandler.putCommand(new AICommand(AICommand.positionCommand, new Vector2(0, 0), 300.0));
-                    if (r.Next(2) == 0)
-                    {
-
-                        aiHandler.putCommand(new AICommand(AICommand.fireCommand, null, 300));
-                    }
-                    else
-                    {
-                        aiHandler.putCommand(new AICommand(AICommand.passCommand, null, 300));
-                    }
-                    aiHandler.putCommand(new AICommand(AICommand.fireCommand, null, 300));
-                    corner = new Vector2(300 * widthScale, (r.Next(2)) * 220 * heightScale + 100);
+                    aiHandler.putCommand(new AICommand(AICommand.fireCommand, null, 300 + r.Next(100)));
+                    corner = new Vector2((300 + r.Next(200) - 100) * widthScale, (((!high) ? 1 : 0)) * 220 * heightScale + 100);
                     aiHandler.putCommand(new AICommand(AICommand.driveCommand, corner, 200));
                     //aiHandler.putCommand(new AICommand(AICommand.driveCommand, new Vector2( r.Next(8)*50+50,r.Next(5) * 50 + 50), 200));
                 }
@@ -334,13 +335,25 @@ namespace AerialAssist
             {
                 Vector2 offSet = (Vector2)command.getValue();
                 Vector2 ballCoordinate = Vector2.Zero;
+                double minDistance = double.MaxValue;
+
+                
+
+                
+                
                 foreach (Ball b in balls)
                 {
                     if (b.getColor().Equals(color))
                     {
-                        ballCoordinate = b.getLocation();
+                        if (UTIL.distance(location, b.getLocation()) < minDistance && ((offSet.Equals(Vector2.Zero)) ? b.getIsFree() : !b.getIsFree()))
+                        {
+                            ballCoordinate = b.getLocation();
+                            minDistance = UTIL.distance(ballCoordinate, location);
+                        }
                     }
                 }
+               
+
                 Vector2 target = ballCoordinate + offSet;
 
                 powerAxis = (float)aiDrivePID.calcPID(UTIL.distance(location, target));
@@ -358,21 +371,9 @@ namespace AerialAssist
                 
                 turnAxis = (float)aiTurnPID.calcPID(rotation);
 
-                bool controlled = false;
-
-                foreach (Ball b in balls)
-                {
-                    if (b.getColor().Equals(color))
-                    {
-                        if (b.getIsFree() == false)
-                        {
-                            controlled = true;
-                        }
-                    }
-                }
                 
 
-                if (activeBall != null || offSet.Equals(Vector2.Zero) && controlled || !offSet.Equals(Vector2.Zero) && !controlled)
+                if (activeBall != null || ballCoordinate.Equals(Vector2.Zero))
                 {
                     aiHandler.move();
                 }
@@ -382,11 +383,16 @@ namespace AerialAssist
             {
                 Vector2 offSet = Vector2.Zero;
                 Vector2 ballCoordinate = Vector2.Zero;
+                double minDistance = double.MaxValue;
                 foreach (Ball b in balls)
                 {
-                    if (!b.getColor().Equals(color))
+                    if (b.getColor().Equals(color))
                     {
-                        ballCoordinate = b.getLocation();
+                        if (UTIL.distance(location, b.getLocation()) < minDistance)
+                        {
+                            ballCoordinate = b.getLocation();
+                            minDistance = UTIL.distance(ballCoordinate, location);
+                        }
                     }
                 }
                 Vector2 target = ballCoordinate + offSet;
@@ -436,22 +442,22 @@ namespace AerialAssist
             else if (driveMode == FieldCentric)
             {
                 
-                tempLocation = location + new Vector2(strafeAxis * McCannumDriveConstant, powerAxis * McCannumDriveConstant);
+                tempLocation = location + new Vector2(strafeAxis * McCannumDriveConstant, -powerAxis * McCannumDriveConstant);
 
                 tempRotation = rotation + turnAxis * turnConst;
             }
             else if (driveMode == McCannumDrive)
             {
                 
-                tempLocation = location + new Vector2(strafeAxis * (float)Math.Sin(rotation) * McCannumDriveConstant, -strafeAxis * (float)Math.Cos(rotation) * McCannumDriveConstant);
+                tempLocation = location + new Vector2(-strafeAxis * (float)Math.Cos(rotation - Math.PI/2) * McCannumDriveConstant, -strafeAxis * (float)Math.Sin(rotation - Math.PI/2) * McCannumDriveConstant);
                 tempLocation+= new Vector2(powerAxis * McCannumDriveConstant * (float)Math.Cos(rotation), powerAxis * McCannumDriveConstant * (float)Math.Sin(rotation));
 
                 tempRotation = rotation + turnAxis * turnConst;
             }
             else if (driveMode == UnicornDrive)
             {
-                
-                tempLocation = location + new Vector2(strafeAxis * (float)Math.Sin(rotation) * UnicornDriveConstant, -strafeAxis * (float)Math.Cos(rotation) * UnicornDriveConstant);
+
+                tempLocation = location + new Vector2(-strafeAxis * (float)Math.Cos(rotation - Math.PI / 2) * UnicornDriveConstant, -strafeAxis * (float)Math.Sin(rotation - Math.PI / 2) * UnicornDriveConstant);
                 tempLocation += new Vector2(powerAxis * UnicornDriveConstant * (float)Math.Cos(rotation), powerAxis * UnicornDriveConstant * (float)Math.Sin(rotation));
 
                 tempRotation = rotation + turnAxis * turnConst;

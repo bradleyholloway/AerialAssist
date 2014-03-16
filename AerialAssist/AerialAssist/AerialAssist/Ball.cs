@@ -27,6 +27,8 @@ namespace AerialAssist
         private Robot linked;
         private bool inAir;
         private ScoreMatrix matrix;
+        private int penaltyPoints;
+        private bool fouled;
 
         public Ball(Robot startLink, Color color, Robot r2, Robot r3)
         {
@@ -103,7 +105,7 @@ namespace AerialAssist
                     return matrix.getAssistBonus() + 10;
                 }
 
-                if (location.X < AerialRobot.minXPosition * widthScale || location.X > AerialRobot.maxXPosition * widthScale || Math.Abs(location.X / widthScale - 306.278f) < 10 * widthScale && Math.Abs(location.Z - trussHeight) < 4)
+                if (location.X < AerialRobot.minXPosition * widthScale || location.X > AerialRobot.maxXPosition * widthScale || Math.Abs(location.X - 306.278f * widthScale) < 8 * widthScale && Math.Abs(location.Z - trussHeight) < 4)
                 {
                     launchPosition = location;
                     float velocity = launchVelocity.Z - ballAcceleration * timeSinceLaunch;
@@ -132,7 +134,7 @@ namespace AerialAssist
                     timeSinceLaunch = 0f;
                 }
 
-                if (location.Y < AerialRobot.minYPosition * heightScale - Ball.radius/2 || location.Y > AerialRobot.maxYPosition * heightScale + Ball.radius/2)
+                if (location.Y < AerialRobot.minYPosition * heightScale - Ball.radius/3 || location.Y > AerialRobot.maxYPosition * heightScale + Ball.radius/3)
                 {
                     return 0;
                 }
@@ -144,7 +146,27 @@ namespace AerialAssist
                 location = new Vector3(linked.getLocation().X, linked.getLocation().Y, linked.getBallHeight());
                 matrix.update(linked);
             }
+            if (linked != null && !linked.getColor().Equals(color))
+            {
+                if (!fouled)
+                {
+                    fouled = true;
+                    penaltyPoints = 50;
+                }
+            }
+            else
+            {
+                fouled = false;
+            }
+
             return -1;
+        }
+
+        public int getPenaltyPoints()
+        {
+            int temp = penaltyPoints;
+            penaltyPoints = 0;
+            return temp;
         }
 
         public void pushBall(Vector2 contact)
