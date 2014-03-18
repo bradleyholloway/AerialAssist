@@ -180,12 +180,13 @@ namespace BradleyXboxUtils
             }
             else
             {
-                if (Keyboard.GetState().IsKeyDown(Keys.Right))
+                if (Keyboard.GetState().IsKeyDown(Keys.OemPeriod))
                     return 1;
-                else if (Keyboard.GetState().IsKeyDown(Keys.Left))
+                else if (Keyboard.GetState().IsKeyDown(Keys.OemComma))
                     return -1;
                 else
                     return 0;
+                
             }
         }
         public override double getRightX()
@@ -238,7 +239,7 @@ namespace BradleyXboxUtils
         public override Boolean getBottomActionButton()
         {
             if (secondPlayer)
-                return Keyboard.GetState().IsKeyDown(Keys.Insert);
+                return Keyboard.GetState().IsKeyDown(Keys.LeftControl);
             else
                 return Keyboard.GetState().IsKeyDown(Keys.RightControl);
             //return GamePad.GetState(p).IsButtonDown(Buttons.A);
@@ -259,7 +260,7 @@ namespace BradleyXboxUtils
         public override Boolean getRightActionButton()
         {
             if (secondPlayer)
-                return Keyboard.GetState().IsKeyDown(Keys.PageUp);
+                return Keyboard.GetState().IsKeyDown(Keys.LeftShift);
             else
                 return Keyboard.GetState().IsKeyDown(Keys.RightAlt);
         }

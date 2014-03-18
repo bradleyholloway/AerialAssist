@@ -29,6 +29,11 @@ namespace AerialAssist
         public const int PassAI = 2;
         public const int RecieveAndShootAI = 3;
         public const int DefenseAI = 4;
+        public const int RedPrimary = 0;
+        public const int WhitePrimary = 1;
+        public const int BluePrimary = 2;
+        public static double redZone = 600;
+        public static double blueZone = 300;
 
         private static Random r = new Random();
 
@@ -45,15 +50,19 @@ namespace AerialAssist
         private int driveMode;
         private Ball activeBall;
         private bool CPU;
+        private int stuckCount;
 
         private AIHandler aiHandler;
         private AICommand previous;
         private double cycles;
         private PID aiDrivePID;
         private PID aiTurnPID;
+        private int primaryZone;
+        private Vector2 previousPosition;
 
-        public AerialRobot(Texture2D robotImage, Vector2 scale, Vector2 location, Color color, float rotation, float ballH, Input driverInput, int driveMode, bool CPU, int AImode)
+        public AerialRobot(Texture2D robotImage, Vector2 scale, Vector2 location, Color color, float rotation, float ballH, Input driverInput, int driveMode, bool CPU, int AImode, int primaryZone)
         {
+            this.previousPosition = Vector2.Zero;
             this.robotImage = robotImage;
             this.scale = scale;
             this.location = location;
@@ -65,17 +74,43 @@ namespace AerialAssist
             this.activeBall = null;
             this.CPU = CPU;
             this.drivePID = new PID(.1,.05,.1,3);
+            this.primaryZone = primaryZone;
 
             if (CPU)
             {
                 aiTurnPID = new PID(.05, .05, .05, .01);
                 aiTurnPID.setMinDoneCycles(20);
                 aiTurnPID.setDoneRange(.1);
-                aiDrivePID = new PID(.05, 0, .05, .01);
+                aiDrivePID = new PID(.02, 0, .05, .01);
                 aiHandler = new AIHandler();
+                bool high1;
+                if (primaryZone == RedPrimary)
+                {
+                    high1 = r.Next(2) == 1;
+                    Vector2 corner = new Vector2(500 * widthScale, ((high1) ? 1 : 0) * 220 * heightScale + 50);
+                    aiHandler.putCommand(new AICommand(AICommand.driveCommand, corner, 10));
+                    
+                }
+                else if (primaryZone == BluePrimary)
+                {
+                    high1 = r.Next(2) == 1;
+                    Vector2 corner = new Vector2(100 * widthScale, ((high1) ? 1 : 0) * 220 * heightScale + 50);
+                    aiHandler.putCommand(new AICommand(AICommand.driveCommand, corner, 10));
+                    
+                }
+                else
+                {
+                    high1 = r.Next(2) == 1;
+                    Vector2 corner = new Vector2((300 + r.Next(200) - 100) * widthScale, ((high1) ? 1 : 0) * 220 * heightScale + 50);
+                    aiHandler.putCommand(new AICommand(AICommand.driveCommand, corner, 10));
+                    
+                }
 
                 if (AImode == StandardAI)
                 {
+                    aiHandler.putCommand(new AICommand(AICommand.driveCommand, new Vector2((float)redZone + 5f * widthScale, heightScale * 200f), 300));
+                    aiHandler.putCommand(new AICommand(AICommand.driveCommand, new Vector2((float)blueZone - 5f * widthScale, heightScale * 200f), 300));
+                    
                     aiHandler.putCommand(new AICommand(AICommand.positionCommand, new Vector2(0, 0), 300.0 + r.Next(100)));
                     if (r.Next(2) == 0)
                     {
@@ -101,12 +136,14 @@ namespace AerialAssist
                     else
                     {
                         aiHandler.putCommand(new AICommand(AICommand.passCommand, null, 300 + r.Next(100)));
+                        aiHandler.putCommand(new AICommand(AICommand.defenseCommand, null, 30 + r.Next(100)));
                     }
                     aiHandler.putCommand(new AICommand(AICommand.fireCommand, null, 300 + r.Next(100)));
                     bool high = r.Next(2) == 1;
                     Vector2 corner = new Vector2((300 + r.Next(200) - 100) * widthScale, ((high) ? 1:0) * 220 * heightScale + 50);
                     aiHandler.putCommand(new AICommand(AICommand.driveCommand, corner, 200 + r.Next(100)));
                     aiHandler.putCommand(new AICommand(AICommand.positionCommand, new Vector2(0, 0), 300.0));
+                    aiHandler.putCommand(new AICommand(AICommand.defenseCommand, null, 30 + r.Next(100)));
                     if (r.Next(2) == 0)
                     {
 
@@ -115,6 +152,7 @@ namespace AerialAssist
                     else
                     {
                         aiHandler.putCommand(new AICommand(AICommand.passCommand, null, 300 + r.Next(100)));
+                        aiHandler.putCommand(new AICommand(AICommand.defenseCommand, null, 30 + r.Next(100)));
                     }
                     aiHandler.putCommand(new AICommand(AICommand.fireCommand, null, 300 + r.Next(100)));
                     corner = new Vector2((300 + r.Next(200) - 100) * widthScale, (r.Next(2)) * 220 * heightScale + 50);
@@ -128,8 +166,11 @@ namespace AerialAssist
                     else
                     {
                         aiHandler.putCommand(new AICommand(AICommand.passCommand, null, 300));
+                        aiHandler.putCommand(new AICommand(AICommand.defenseCommand, null, 30 + r.Next(100)));
                     }
+
                     aiHandler.putCommand(new AICommand(AICommand.fireCommand, null, 300 + r.Next(100)));
+                    aiHandler.putCommand(new AICommand(AICommand.defenseCommand, null, 30 + r.Next(100)));
                     corner = new Vector2((300 + r.Next(200) - 100) * widthScale, (((!high) ? 1 : 0)) * 220 * heightScale + 100);
                     aiHandler.putCommand(new AICommand(AICommand.driveCommand, corner, 200));
                     //aiHandler.putCommand(new AICommand(AICommand.driveCommand, new Vector2( r.Next(8)*50+50,r.Next(5) * 50 + 50), 200));
@@ -137,11 +178,12 @@ namespace AerialAssist
                 if (AImode == RecieveAndShootAI)
                 {
 
-                    aiHandler.putCommand(new AICommand(AICommand.positionCommand, new Vector2(200 * ((color.Equals(Color.Red)) ? 1 : -1), 0), 300.0));
-                    aiHandler.putCommand(new AICommand(AICommand.positionCommand, new Vector2(0, 0), 30.0));
+                    //aiHandler.putCommand(new AICommand(AICommand.positionCommand, new Vector2(200 * ((color.Equals(Color.Red)) ? 1 : -1), 0), 300.0));
+                    aiHandler.putCommand(new AICommand(AICommand.positionCommand, new Vector2(0, 0), 300.0));
 
 
                     aiHandler.putCommand(new AICommand(AICommand.fireCommand, null, 300));
+                    aiHandler.putCommand(new AICommand(AICommand.driveCommand, new Vector2((color.Equals(Color.Red)) ? 700 * widthScale : 100 * widthScale, heightScale * 150), 30));
 
                 }
                 if (AImode == FollowAndShootAI)
@@ -154,10 +196,130 @@ namespace AerialAssist
                     aiHandler.putCommand(new AICommand(AICommand.positionCommand, new Vector2(0, 0), 300.0));
                     aiHandler.putCommand(new AICommand(AICommand.passCommand, null, 300));
                     aiHandler.putCommand(new AICommand(AICommand.fireCommand, null, 300));
+                    aiHandler.putCommand(new AICommand(AICommand.positionCommand, new Vector2(0, 0), 30.0));
+                    aiHandler.putCommand(new AICommand(AICommand.fireCommand, null, 300));
                 }
                 if (AImode == DefenseAI)
                 {
-                    aiHandler.putCommand(new AICommand(AICommand.defenseCommand, null, 300));
+                    aiHandler.putCommand(new AICommand(AICommand.defenseCommand, null, 30));
+                    aiHandler.putCommand(new AICommand(AICommand.fireCommand, null, 300));
+                    aiHandler.putCommand(new AICommand(AICommand.positionCommand, Vector2.Zero, 100));
+                }
+                //aiHandler.putCommand(new AICommand(AICommand.defenseCommand, null, 30));
+                if (primaryZone == RedPrimary)
+                {
+                    
+                    Vector2 corner = new Vector2(500 * widthScale, (((!high1) ? 1 : 0)) * 220 * heightScale + 100);
+                    aiHandler.putCommand(new AICommand(AICommand.driveCommand, corner, 30));
+                }
+                else if (primaryZone == BluePrimary)
+                {
+                    
+                    Vector2 corner = new Vector2(100 * widthScale, (((!high1) ? 1 : 0)) * 220 * heightScale + 100);
+                    aiHandler.putCommand(new AICommand(AICommand.driveCommand, corner, 30));
+                }
+                else
+                {
+                    
+                    Vector2 corner = new Vector2((300 + r.Next(200) - 100) * widthScale, (((!high1) ? 1 : 0)) * 220 * heightScale + 100);
+                    aiHandler.putCommand(new AICommand(AICommand.driveCommand, corner, 30));
+                }
+                if (AImode == StandardAI)
+                {
+                    aiHandler.putCommand(new AICommand(AICommand.driveCommand, new Vector2((float)redZone + 5f * widthScale, heightScale * 200f), 300));
+                    aiHandler.putCommand(new AICommand(AICommand.driveCommand, new Vector2((float)blueZone - 5f * widthScale, heightScale * 200f), 300));
+
+                    aiHandler.putCommand(new AICommand(AICommand.positionCommand, new Vector2(0, 0), 300.0 + r.Next(100)));
+                    if (r.Next(2) == 0)
+                    {
+
+                        aiHandler.putCommand(new AICommand(AICommand.fireCommand, null, 300 + r.Next(100)));
+                    }
+                    else
+                    {
+                        aiHandler.putCommand(new AICommand(AICommand.passCommand, null, 300 + r.Next(100)));
+                    }
+                    aiHandler.putCommand(new AICommand(AICommand.positionCommand, new Vector2(200 * ((color.Equals(Color.Red)) ? 1 : -1), 0), 300.0));
+                    aiHandler.putCommand(new AICommand(AICommand.positionCommand, new Vector2(0, 100 * (r.Next(2) * 2 - 1)), 300.0));
+                    aiHandler.putCommand(new AICommand(AICommand.positionCommand, new Vector2(0, 0), 300.0 + r.Next(100)));
+
+                    aiHandler.putCommand(new AICommand(AICommand.passCommand, null, 300 + r.Next(100)));
+                    aiHandler.putCommand(new AICommand(AICommand.fireCommand, null, 300 + r.Next(100)));
+                    aiHandler.putCommand(new AICommand(AICommand.positionCommand, new Vector2(0, 0), 300.0 + r.Next(100)));
+                    if (r.Next(2) == 0)
+                    {
+
+                        aiHandler.putCommand(new AICommand(AICommand.fireCommand, null, 300 + r.Next(100)));
+                    }
+                    else
+                    {
+                        aiHandler.putCommand(new AICommand(AICommand.passCommand, null, 300 + r.Next(100)));
+                        aiHandler.putCommand(new AICommand(AICommand.defenseCommand, null, 30 + r.Next(100)));
+                    }
+                    aiHandler.putCommand(new AICommand(AICommand.fireCommand, null, 300 + r.Next(100)));
+                    bool high = r.Next(2) == 1;
+                    Vector2 corner = new Vector2((300 + r.Next(200) - 100) * widthScale, ((high) ? 1 : 0) * 220 * heightScale + 50);
+                    aiHandler.putCommand(new AICommand(AICommand.driveCommand, corner, 200 + r.Next(100)));
+                    aiHandler.putCommand(new AICommand(AICommand.positionCommand, new Vector2(0, 0), 300.0));
+                    aiHandler.putCommand(new AICommand(AICommand.defenseCommand, null, 30 + r.Next(100)));
+                    if (r.Next(2) == 0)
+                    {
+
+                        aiHandler.putCommand(new AICommand(AICommand.fireCommand, null, 300 + r.Next(100)));
+                    }
+                    else
+                    {
+                        aiHandler.putCommand(new AICommand(AICommand.passCommand, null, 300 + r.Next(100)));
+                        aiHandler.putCommand(new AICommand(AICommand.defenseCommand, null, 30 + r.Next(100)));
+                    }
+                    aiHandler.putCommand(new AICommand(AICommand.fireCommand, null, 300 + r.Next(100)));
+                    corner = new Vector2((300 + r.Next(200) - 100) * widthScale, (r.Next(2)) * 220 * heightScale + 50);
+                    aiHandler.putCommand(new AICommand(AICommand.driveCommand, corner, 200 + r.Next(100)));
+                    aiHandler.putCommand(new AICommand(AICommand.positionCommand, new Vector2(0, 0), 300.0 + r.Next(100)));
+                    if (r.Next(2) == 0)
+                    {
+
+                        aiHandler.putCommand(new AICommand(AICommand.fireCommand, null, 300));
+                    }
+                    else
+                    {
+                        aiHandler.putCommand(new AICommand(AICommand.passCommand, null, 300));
+                        aiHandler.putCommand(new AICommand(AICommand.defenseCommand, null, 30 + r.Next(100)));
+                    }
+
+                    aiHandler.putCommand(new AICommand(AICommand.fireCommand, null, 300 + r.Next(100)));
+                    aiHandler.putCommand(new AICommand(AICommand.defenseCommand, null, 30 + r.Next(100)));
+                    corner = new Vector2((300 + r.Next(200) - 100) * widthScale, (((!high) ? 1 : 0)) * 220 * heightScale + 100);
+                    aiHandler.putCommand(new AICommand(AICommand.driveCommand, corner, 200));
+                    //aiHandler.putCommand(new AICommand(AICommand.driveCommand, new Vector2( r.Next(8)*50+50,r.Next(5) * 50 + 50), 200));
+                }
+                if (AImode == RecieveAndShootAI)
+                {
+
+                    //aiHandler.putCommand(new AICommand(AICommand.positionCommand, new Vector2(200 * ((color.Equals(Color.Red)) ? 1 : -1), 0), 300.0));
+                    aiHandler.putCommand(new AICommand(AICommand.positionCommand, new Vector2(0, 0), 300.0));
+
+
+                    aiHandler.putCommand(new AICommand(AICommand.fireCommand, null, 300));
+                    aiHandler.putCommand(new AICommand(AICommand.driveCommand, new Vector2((color.Equals(Color.Red)) ? 700 * widthScale : 100 * widthScale, heightScale * 150), 30));
+
+                }
+                if (AImode == FollowAndShootAI)
+                {
+                    aiHandler.putCommand(new AICommand(AICommand.positionCommand, new Vector2(0, 0), 300.0));
+                    aiHandler.putCommand(new AICommand(AICommand.fireCommand, null, 300));
+                }
+                if (AImode == PassAI)
+                {
+                    aiHandler.putCommand(new AICommand(AICommand.positionCommand, new Vector2(0, 0), 300.0));
+                    aiHandler.putCommand(new AICommand(AICommand.passCommand, null, 300));
+                    aiHandler.putCommand(new AICommand(AICommand.fireCommand, null, 300));
+                    aiHandler.putCommand(new AICommand(AICommand.positionCommand, new Vector2(0, 0), 30.0));
+                    aiHandler.putCommand(new AICommand(AICommand.fireCommand, null, 300));
+                }
+                if (AImode == DefenseAI)
+                {
+                    aiHandler.putCommand(new AICommand(AICommand.defenseCommand, null, 30));
                     aiHandler.putCommand(new AICommand(AICommand.fireCommand, null, 300));
                     aiHandler.putCommand(new AICommand(AICommand.positionCommand, Vector2.Zero, 100));
                 }
@@ -201,6 +363,7 @@ namespace AerialAssist
 
         void Robot.run(List<Robot> robots, List<Ball> balls, float widthScale, float heightScale)
         {
+            
             AerialRobot.widthScale = widthScale;
             AerialRobot.heightScale = heightScale;
             if (!CPU)
@@ -228,6 +391,15 @@ namespace AerialAssist
         }
         private void aiDrive(List<Robot> robots, List<Ball> balls)
         {
+            if (this.previousPosition.Equals(location))
+            {
+                stuckCount++;
+            }
+            else
+            {
+                stuckCount = 0;
+            }
+            bool moved = false;
             rotation = (float)UTIL.normalizeDirection(rotation);
 
             float turnAxis, strafeAxis, powerAxis;
@@ -242,13 +414,14 @@ namespace AerialAssist
             if (cycles > command.getTimeout())
             {
                 aiHandler.move();
+                moved = true;
                 command = aiHandler.get();
                 cycles = 0;
             }
-
+            Vector2 target = Vector2.Zero;
             if (command.getType() == AICommand.driveCommand)
             {
-                Vector2 target = (Vector2)command.getValue();
+                target = (Vector2)command.getValue();
                 powerAxis = (float)aiDrivePID.calcPID(UTIL.distance(location, target));
                 double goal = UTIL.normalizeDirection(UTIL.getDirectionTward(location, target));
                 if (Math.Abs(goal + 2 * Math.PI - rotation) < Math.Abs(goal - rotation))
@@ -262,8 +435,9 @@ namespace AerialAssist
 
                 aiTurnPID.setDesiredValue(goal);
                 turnAxis = (float)aiTurnPID.calcPID(rotation);
-                if (UTIL.distance(target, location) < 35)
+                if (UTIL.distance(target, location) < 35 && !moved)
                 {
+                    moved = true;
                     aiHandler.move();
                 }
 
@@ -286,12 +460,13 @@ namespace AerialAssist
                 aiTurnPID.setDesiredValue(goal);
                 
                 turnAxis = (float)aiTurnPID.calcPID(rotation);
-                powerAxis = (aiTurnPID.isDone()) ? 0.0f : 0.2f;
+                powerAxis = (aiTurnPID.isDone()) ? -0.3f : 0.25f;
                 fire = aiTurnPID.isDone();
 
-                if (activeBall == null)
+                if (activeBall == null && !moved)
                 {
                     aiHandler.move();
+                    moved = true;
                 }
 
             }
@@ -325,7 +500,7 @@ namespace AerialAssist
                 turnAxis = (float)aiTurnPID.calcPID(rotation);
                 fire = aiTurnPID.isDone();
 
-                if (activeBall == null || activeBall.getAssistBonus() >= 10)
+                if (!moved && (activeBall == null || activeBall.getAssistBonus() >= 10))
                 {
                     aiHandler.move();
                 }
@@ -335,6 +510,7 @@ namespace AerialAssist
             {
                 Vector2 offSet = (Vector2)command.getValue();
                 Vector2 ballCoordinate = Vector2.Zero;
+                
                 double minDistance = double.MaxValue;
 
                 
@@ -347,14 +523,42 @@ namespace AerialAssist
                     {
                         if (UTIL.distance(location, b.getLocation()) < minDistance && ((offSet.Equals(Vector2.Zero)) ? b.getIsFree() : !b.getIsFree()))
                         {
-                            ballCoordinate = b.getLocation();
-                            minDistance = UTIL.distance(ballCoordinate, location);
+                            target = b.getLocation() + offSet;
+                        
+                            if (primaryZone == RedPrimary)
+                            {
+                                if (target.X > redZone * widthScale)
+                                {
+                                    ballCoordinate = b.getLocation();
+                                    minDistance = UTIL.distance(ballCoordinate, location);
+                                }
+                            }
+                            else if (primaryZone == WhitePrimary)
+                            {
+                                if (target.X > blueZone * widthScale && target.X < redZone * widthScale)
+                                {
+                                    ballCoordinate = b.getLocation();
+                                    minDistance = UTIL.distance(ballCoordinate, location);
+                                }
+                            }
+                            else if (primaryZone == BluePrimary)
+                            {
+                                if (target.X < blueZone * widthScale)
+                                {
+                                    ballCoordinate = b.getLocation();
+                                    minDistance = UTIL.distance(ballCoordinate, location);
+                                }
+                            }
+                        
+
+                        
+                            
                         }
                     }
                 }
                
 
-                Vector2 target = ballCoordinate + offSet;
+                target = ballCoordinate + offSet;
 
                 powerAxis = (float)aiDrivePID.calcPID(UTIL.distance(location, target));
 
@@ -373,8 +577,9 @@ namespace AerialAssist
 
                 
 
-                if (activeBall != null || ballCoordinate.Equals(Vector2.Zero))
+                if (!moved && activeBall != null || ballCoordinate.Equals(Vector2.Zero))
                 {
+                    moved = true;
                     aiHandler.move();
                 }
 
@@ -386,7 +591,7 @@ namespace AerialAssist
                 double minDistance = double.MaxValue;
                 foreach (Ball b in balls)
                 {
-                    if (b.getColor().Equals(color))
+                    if (!b.getColor().Equals(color))
                     {
                         if (UTIL.distance(location, b.getLocation()) < minDistance)
                         {
@@ -395,7 +600,7 @@ namespace AerialAssist
                         }
                     }
                 }
-                Vector2 target = ballCoordinate + offSet;
+                target = ballCoordinate + offSet;
 
                 powerAxis = (float)aiDrivePID.calcPID(UTIL.distance(location, target));
 
@@ -412,11 +617,57 @@ namespace AerialAssist
                 
                 turnAxis = (float)aiTurnPID.calcPID(rotation);
 
-               
+                if (activeBall != null && !moved)
+                {
+                    moved = true;
+                    aiHandler.move();
+                }
 
             }
-            drive(robots, balls, turnAxis, powerAxis, strafeAxis);
             
+
+            if (!target.Equals(Vector2.Zero) && !moved)
+            {
+                if (primaryZone == RedPrimary)
+                {
+                    if (target.X < redZone * widthScale)
+                    {
+                        aiHandler.move();
+                        moved = true;
+                    }
+                }
+                else if (primaryZone == WhitePrimary)
+                {
+                    if (target.X < blueZone * widthScale || target.X > redZone * widthScale)
+                    {
+                        aiHandler.move();
+                        moved = true;
+                    }
+                }
+                else if (primaryZone == BluePrimary)
+                {
+                    if (target.X > blueZone * widthScale)
+                    {
+                        aiHandler.move();
+                        moved = true;
+                    }
+                }
+            }
+            if (!moved || fire)
+            {
+                drive(robots, balls, turnAxis, powerAxis, strafeAxis);
+            }
+            else
+            {
+                drive(robots, balls, 0, 0, 0);
+            }
+            if (stuckCount >= 200)
+            {
+                turnAxis = -0.5f;
+                powerAxis = -1.0f;
+                strafeAxis = 0.0f;
+                drive(robots, balls, turnAxis, powerAxis, strafeAxis);
+            }
 
             if (activeBall != null && fire)
             {
@@ -430,6 +681,7 @@ namespace AerialAssist
         
         private void drive(List<Robot> robots, List<Ball> balls, float turnAxis, float powerAxis, float strafeAxis)
         {
+            this.previousPosition = location;
             powerAxis *= -1;
             Vector2 tempLocation = location;
             float tempRotation = rotation;
@@ -494,7 +746,7 @@ namespace AerialAssist
             {
                 if(!b.Equals(activeBall) && UTIL.distance(location, b.getLocation()) < Ball.radius/2 && b.getHeight() < .1f && b.getIsFree()) 
                 {
-                    if ((driverInput.getLeftTrigger() > .5 || (CPU && aiHandler.get().getType() != AICommand.defenseCommand)) && Math.Abs(UTIL.normalizeDirection(rotation) - UTIL.normalizeDirection(UTIL.getDirectionTward(location, b.getLocation()))) < .6 && activeBall== null)
+                    if ((driverInput.getLeftTrigger() > .5 || (CPU && aiHandler.get().getType() != AICommand.defenseCommand && aiHandler.get().getType() != AICommand.driveCommand)) && Math.Abs(UTIL.normalizeDirection(rotation) - UTIL.normalizeDirection(UTIL.getDirectionTward(location, b.getLocation()))) < .6 && activeBall== null)
                     {
                         b.linkRobot(this);
                         activeBall = b;
@@ -505,6 +757,7 @@ namespace AerialAssist
                     }
                 }
             }
+            
         }
 
         int Robot.pushRobot(Vector2 locationStart, Vector2 velocityOfImpact, List<Robot> robots)

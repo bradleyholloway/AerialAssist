@@ -42,7 +42,7 @@ namespace AerialAssist
         {
             graphics = new GraphicsDeviceManager(this);
             
-            graphics.IsFullScreen = true;
+            graphics.IsFullScreen = false;
             keyboard1 = true;
             keyboard2 = false;
 
@@ -60,9 +60,10 @@ namespace AerialAssist
             base.Initialize();
 
             menuItems = new List<MenuItem>();
-            menuItems.Add(new MenuItem("No Keyboard", new Vector2(100f, 100f), Color.White, 4));
-            menuItems.Add(new MenuItem("1  Keyboard", new Vector2(100f, 150f), Color.Red, 2));
-            menuItems.Add(new MenuItem("2  Keyboard", new Vector2(100f, 200f), Color.Red, 3));
+            menuItems.Add(new MenuItem("No Keyboard", new Vector2(100f, 200f), Color.White, 4));
+            menuItems.Add(new MenuItem("1  Keyboard", new Vector2(100f, 250f), Color.Red, 2));
+            menuItems.Add(new MenuItem("2  Keyboard", new Vector2(100f, 300f), Color.Red, 3));
+            menuItems.Add(new MenuItem("Quit", new Vector2(100f, 350f), Color.Black, 99));
 
             AerialRobot.ArcadeDriveConstant = 4f;
             AerialRobot.McCannumDriveConstant = 3f;
@@ -102,16 +103,21 @@ namespace AerialAssist
             AerialRobot.heightScale = heightScale;
             ScoreMatrix.blueWhiteZone = .35f * widthScale * field.Width;
             ScoreMatrix.redWhiteZone = .67f * widthScale * field.Width;
+            AerialRobot.redZone = .67 * field.Width;
+            AerialRobot.blueZone = .35f * field.Width;
 
             Texture2D sonic = Content.Load<Texture2D>("robot2");
+            float sonicScale = .12f;
+            Texture2D diamondBack = Content.Load<Texture2D>("top_view");
+            float dBScale = .045f;
 
             robots = new List<Robot>();
-            robots.Add(new AerialRobot(sonic, new Vector2(.12f * widthScale, .12f * heightScale), new Vector2(widthScale * 320f, heightScale * 100f), Color.Red, .00001f, 0f, new KeyboardInput(PlayerIndex.One), AerialRobot.ArcadeDrive, !keyboard1, AerialRobot.StandardAI));
-            robots.Add(new AerialRobot(sonic, new Vector2(.12f * widthScale, .12f * heightScale), new Vector2(widthScale * 260f, heightScale * 100f), Color.Blue, (float)Math.PI+.00001f, 0f, new KeyboardInput(PlayerIndex.Two), AerialRobot.ArcadeDrive, !keyboard2, AerialRobot.StandardAI));
-            robots.Add(new AerialRobot(sonic, new Vector2(.12f * widthScale, .12f * heightScale), new Vector2(widthScale * 320f, heightScale * 150f), Color.Red, .00001f, 0f, new ControllerInput(PlayerIndex.One), AerialRobot.McCannumDrive, !GamePad.GetState(PlayerIndex.One).IsConnected, AerialRobot.StandardAI));
-            robots.Add(new AerialRobot(sonic, new Vector2(.12f * widthScale, .12f * heightScale), new Vector2(widthScale * 260f, heightScale * 150f), Color.Blue, (float)Math.PI + .00001f, 0f, new ControllerInput(PlayerIndex.Two), AerialRobot.UnicornDrive, !GamePad.GetState(PlayerIndex.Two).IsConnected, AerialRobot.StandardAI));
-            robots.Add(new AerialRobot(sonic, new Vector2(.12f * widthScale, .12f * heightScale), new Vector2(widthScale * 320f, heightScale * 200f), Color.Red, .00001f, 0f, new ControllerInput(PlayerIndex.Three), AerialRobot.ArcadeDrive, !GamePad.GetState(PlayerIndex.Three).IsConnected, AerialRobot.StandardAI));
-            robots.Add(new AerialRobot(sonic, new Vector2(.12f * widthScale, .12f * heightScale), new Vector2(widthScale * 260f, heightScale * 200f), Color.Blue, (float)Math.PI + .00001f, 0f, new ControllerInput(PlayerIndex.Four), AerialRobot.ArcadeDrive, !GamePad.GetState(PlayerIndex.Four).IsConnected, AerialRobot.StandardAI));
+            robots.Add(new AerialRobot(diamondBack, new Vector2(dBScale * widthScale, dBScale * heightScale), new Vector2(widthScale * 320f, heightScale * 100f), Color.Red, .00001f, 0f, new KeyboardInput(PlayerIndex.One), AerialRobot.UnicornDrive, !keyboard1, AerialRobot.RecieveAndShootAI, AerialRobot.RedPrimary));
+            robots.Add(new AerialRobot(sonic, new Vector2(sonicScale * widthScale, .12f * heightScale), new Vector2(widthScale * 260f, heightScale * 100f), Color.Blue, (float)Math.PI+.00001f, 0f, new KeyboardInput(PlayerIndex.Two), AerialRobot.UnicornDrive, !keyboard2, AerialRobot.RecieveAndShootAI, AerialRobot.BluePrimary));
+            robots.Add(new AerialRobot(diamondBack, new Vector2(dBScale * widthScale, dBScale * heightScale), new Vector2(widthScale * 320f, heightScale * 150f), Color.Red, .00001f, 0f, new ControllerInput(PlayerIndex.One), AerialRobot.McCannumDrive, !GamePad.GetState(PlayerIndex.One).IsConnected, AerialRobot.RecieveAndShootAI, AerialRobot.WhitePrimary));
+            robots.Add(new AerialRobot(sonic, new Vector2(sonicScale * widthScale, sonicScale * heightScale), new Vector2(widthScale * 260f, heightScale * 150f), Color.Blue, (float)Math.PI + .00001f, 0f, new ControllerInput(PlayerIndex.Two), AerialRobot.UnicornDrive, !GamePad.GetState(PlayerIndex.Two).IsConnected, AerialRobot.RecieveAndShootAI, AerialRobot.WhitePrimary));
+            robots.Add(new AerialRobot(diamondBack, new Vector2(dBScale * widthScale, dBScale * heightScale), new Vector2(widthScale * 320f, heightScale * 200f), Color.Red, .00001f, 0f, new ControllerInput(PlayerIndex.Three), AerialRobot.ArcadeDrive, !GamePad.GetState(PlayerIndex.Three).IsConnected, AerialRobot.PassAI, AerialRobot.BluePrimary));
+            robots.Add(new AerialRobot(sonic, new Vector2(sonicScale * widthScale, sonicScale * heightScale), new Vector2(widthScale * 260f, heightScale * 200f), Color.Blue, (float)Math.PI + .00001f, 0f, new ControllerInput(PlayerIndex.Four), AerialRobot.ArcadeDrive, !GamePad.GetState(PlayerIndex.Four).IsConnected, AerialRobot.PassAI, AerialRobot.RedPrimary));
 
             balls = new List<Ball>();
             balls.Add(new Ball(robots.ElementAt<Robot>(0), Color.Red, robots.ElementAt<Robot>(2), robots.ElementAt<Robot>(4)));
@@ -272,6 +278,63 @@ namespace AerialAssist
                 {
                     gameState = 0;
                 }
+                for (int ball = 0; ball < balls.Count; ball++)
+                {
+                    Ball b = balls.ElementAt<Ball>(ball);
+                    int result = b.run(balls, widthScale, heightScale);
+                    int penalty = b.getPenaltyPoints();
+                    if (b.getColor().Equals(Color.Red))
+                    {
+                        redScore += penalty;
+                    }
+                    else
+                    {
+                        blueScore += penalty;
+                    }
+
+                    if (result != -1)
+                    {
+                        balls.Remove(b);
+                        if (b.getColor().Equals(Color.Red))
+                        {
+                            redScore += result;
+                            bool redBall = false;
+                            foreach (Ball bb in balls)
+                            {
+                                if (bb.getColor().Equals(Color.Red))
+                                {
+                                    redBall = true;
+                                }
+                            }
+                            if (!redBall)
+                            {
+                                balls.Add(new Ball(new Vector2(120 * widthScale, 140 * heightScale), Color.Red, robots.ElementAt<Robot>(0), robots.ElementAt<Robot>(2), robots.ElementAt<Robot>(4)));
+                            }
+                        }
+                        else
+                        {
+                            blueScore += result;
+                            bool blueBall = false;
+                            foreach (Ball bb in balls)
+                            {
+                                if (bb.getColor().Equals(Color.Blue))
+                                {
+                                    blueBall = true;
+                                }
+                            }
+                            if (!blueBall)
+                            {
+                                balls.Add(new Ball(new Vector2(480 * widthScale, 140 * heightScale), Color.Blue, robots.ElementAt<Robot>(1), robots.ElementAt<Robot>(3), robots.ElementAt<Robot>(5)));
+                            }
+                        }
+                        ball--;
+                    }
+                }
+                
+            }
+            else if (gameState == 99)
+            {
+                this.Exit();
             }
             //redScore = balls.ElementAt<Ball>(0).getAssistBonus()+"";
             base.Update(gameTime);
@@ -291,29 +354,32 @@ namespace AerialAssist
 
             //Draw the Field
             spriteBatch.Draw(field, new Vector2(0,0), null, Color.White, 0f, Vector2.Zero, new Vector2(widthScale, heightScale) , SpriteEffects.None, 0f);
+            foreach (Robot r in robots)
+            {
+                spriteBatch.Draw(r.getImage(), r.getLocation(), null, r.getColor(), r.getRotation(), r.getOrigin(), r.getScale(), SpriteEffects.None, 0f);
+            }
+            foreach (Ball b in balls)
+            {
+                spriteBatch.Draw(b.getImage(), b.getLocation(), null, b.getColor(), b.getRotation(), b.getOrigin(), b.getScale(), SpriteEffects.None, 0f);
+            }
+            spriteBatch.Draw(truss, new Vector2(0, 0), null, Color.White, 0f, Vector2.Zero, new Vector2(widthScale, heightScale), SpriteEffects.None, 0f);
+            foreach (Ball b in balls)
+            {
+                if (b.getHeight() > trussHeight)
+                {
+                    spriteBatch.Draw(b.getImage(), b.getLocation(), null, b.getColor(), b.getRotation(), b.getOrigin(), b.getScale(), SpriteEffects.None, 0f);
+                }
+            }
 
             if (gameState == 1)
             {
                 //Draw the Robots
-                foreach (Robot r in robots)
-                {
-                    spriteBatch.Draw(r.getImage(), r.getLocation(), null, r.getColor(), r.getRotation(), r.getOrigin(), r.getScale(), SpriteEffects.None, 0f);
-                }
+                
 
                 //Draw the Balls
-                foreach (Ball b in balls)
-                {
-                    spriteBatch.Draw(b.getImage(), b.getLocation(), null, b.getColor(), b.getRotation(), b.getOrigin(), b.getScale(), SpriteEffects.None, 0f);
-                }
-                spriteBatch.Draw(truss, new Vector2(0, 0), null, Color.White, 0f, Vector2.Zero, new Vector2(widthScale, heightScale), SpriteEffects.None, 0f);
 
-                foreach (Ball b in balls)
-                {
-                    if (b.getHeight() > trussHeight)
-                    {
-                        spriteBatch.Draw(b.getImage(), b.getLocation(), null, b.getColor(), b.getRotation(), b.getOrigin(), b.getScale(), SpriteEffects.None, 0f);
-                    }
-                }
+
+                
 
                 //Draw the Score and Time
                 spriteBatch.DrawString(timesNewRoman, blueScore + "", new Vector2(widthScale * 20f, heightScale * 20f), Color.Blue);
@@ -324,6 +390,8 @@ namespace AerialAssist
 
             if (gameState == 0)
             {
+                spriteBatch.DrawString(timesNewRoman, "Aerial Assist", new Vector2(graphics.GraphicsDevice.Viewport.Width / 2 - 70f * widthScale, heightScale * 25f), Color.Black);
+                spriteBatch.DrawString(timesNewRoman, "Team 1477 Texas Torque", new Vector2(graphics.GraphicsDevice.Viewport.Width / 2 - 140f * widthScale, heightScale * 55f), Color.Black);
                 foreach (MenuItem m in menuItems)
                 {
                     spriteBatch.DrawString(timesNewRoman, m.text(), m.location(), m.color());
