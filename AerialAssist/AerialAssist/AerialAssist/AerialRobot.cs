@@ -5,11 +5,15 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using BradleyXboxUtils;
+using Microsoft.Xna.Framework.Audio;
 
 namespace AerialAssist
 {
     class AerialRobot : Robot
     {
+        public static SoundEffect driveSound;
+        public static SoundEffect feed;
+        public static SoundEffect launch;
         public static int ArcadeDrive = 0;
         public static int McCannumDrive = 1;
         public static int FieldCentric = 2;
@@ -37,6 +41,7 @@ namespace AerialAssist
 
         private static Random r = new Random();
 
+        private SoundEffectInstance driveSoundInstance;
         private Texture2D robotImage;
         private Vector2 scale;
         private Vector2 location;
@@ -75,7 +80,9 @@ namespace AerialAssist
             this.CPU = CPU;
             this.drivePID = new PID(.1,.05,.1,3);
             this.primaryZone = primaryZone;
-
+            this.driveSoundInstance = driveSound.CreateInstance();
+            driveSoundInstance.IsLooped = true;
+            driveSoundInstance.Volume = .350f;
             if (CPU)
             {
                 aiTurnPID = new PID(.05, .05, .05, .01);
@@ -184,6 +191,22 @@ namespace AerialAssist
 
                     aiHandler.putCommand(new AICommand(AICommand.fireCommand, null, 300));
                     aiHandler.putCommand(new AICommand(AICommand.driveCommand, new Vector2((color.Equals(Color.Red)) ? 700 * widthScale : 100 * widthScale, heightScale * 150), 30));
+                    aiHandler.putCommand(new AICommand(AICommand.positionCommand, new Vector2(0, 0), 300.0));
+
+
+                    aiHandler.putCommand(new AICommand(AICommand.fireCommand, null, 300));
+                    aiHandler.putCommand(new AICommand(AICommand.driveCommand, new Vector2((color.Equals(Color.Red)) ? 700 * widthScale : 100 * widthScale, heightScale * 150), 30));
+                    aiHandler.putCommand(new AICommand(AICommand.positionCommand, new Vector2(0, 0), 300.0));
+
+
+                    aiHandler.putCommand(new AICommand(AICommand.fireCommand, null, 300));
+                    aiHandler.putCommand(new AICommand(AICommand.driveCommand, new Vector2((color.Equals(Color.Red)) ? 700 * widthScale : 100 * widthScale, heightScale * 150), 30));
+                    aiHandler.putCommand(new AICommand(AICommand.positionCommand, new Vector2(0, 0), 300.0));
+
+
+                    aiHandler.putCommand(new AICommand(AICommand.fireCommand, null, 300));
+                    aiHandler.putCommand(new AICommand(AICommand.defenseCommand, null, 30));
+
 
                 }
                 if (AImode == FollowAndShootAI)
@@ -198,6 +221,7 @@ namespace AerialAssist
                     aiHandler.putCommand(new AICommand(AICommand.fireCommand, null, 300));
                     aiHandler.putCommand(new AICommand(AICommand.positionCommand, new Vector2(0, 0), 30.0));
                     aiHandler.putCommand(new AICommand(AICommand.fireCommand, null, 300));
+                    aiHandler.putCommand(new AICommand(AICommand.defenseCommand, null, 60));
                 }
                 if (AImode == DefenseAI)
                 {
@@ -378,6 +402,7 @@ namespace AerialAssist
                 {
                     if (activeBall != null)
                     {
+                        launch.Play();
                         activeBall.launch(new Vector3(launchPower * (float)Math.Cos(rotation) + velocity.X, launchPower * (float)Math.Sin(rotation) + velocity.Y, 2f));
                         activeBall = null;
                     }
@@ -389,6 +414,11 @@ namespace AerialAssist
             }
 
         }
+        void Robot.stopSound()
+        {
+            driveSoundInstance.Stop();
+        }
+
         private void aiDrive(List<Robot> robots, List<Ball> balls)
         {
             if (this.previousPosition.Equals(location))
@@ -673,6 +703,7 @@ namespace AerialAssist
             {
                 activeBall.launch(new Vector3(launchPower * (float)Math.Cos(rotation) + velocity.X, launchPower * (float)Math.Sin(rotation) + velocity.Y, 2f));
                 activeBall = null;
+                launch.Play();
             }
 
             previous = command;
@@ -738,6 +769,15 @@ namespace AerialAssist
                         }
                     }
                 }
+                if (velocity.Length() != 0)
+                {
+                    driveSoundInstance.Play();
+                }
+                else
+                {
+                    driveSoundInstance.Stop();
+                }
+                
                 location += velocity;
             }
             rotation = tempRotation;
@@ -748,6 +788,7 @@ namespace AerialAssist
                 {
                     if ((driverInput.getLeftTrigger() > .5 || (CPU && aiHandler.get().getType() != AICommand.defenseCommand && aiHandler.get().getType() != AICommand.driveCommand)) && Math.Abs(UTIL.normalizeDirection(rotation) - UTIL.normalizeDirection(UTIL.getDirectionTward(location, b.getLocation()))) < .6 && activeBall== null)
                     {
+                        feed.Play();
                         b.linkRobot(this);
                         activeBall = b;
                     }

@@ -38,6 +38,21 @@ namespace AerialAssist
         List<Robot> robots;
         List<Ball> balls;
 
+        
+        SoundEffect goal;
+        
+        SoundEffect endGame;
+        SoundEffect score;
+        
+        SoundEffect buzzer;
+        SoundEffect teleOp;
+        SoundEffect start;
+        SoundEffect titleScreen;
+        SoundEffect gamePlay;
+        SoundEffectInstance gamePlayInstance;
+        SoundEffectInstance endGameInstance;
+        SoundEffectInstance titleScreenInstance;
+
         public GameDriver()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -90,6 +105,26 @@ namespace AerialAssist
             redScore = blueScore = 0;
             widthScale = (float)graphics.GraphicsDevice.Viewport.Width / field.Width;
             heightScale = (float)graphics.GraphicsDevice.Viewport.Height / field.Height;
+
+            if(endGame == null)
+            {
+                AerialRobot.launch = Content.Load<SoundEffect>("Piston");
+                score = Content.Load<SoundEffect>("Score");
+                AerialRobot.feed = Content.Load<SoundEffect>("Feed");
+                endGame = Content.Load<SoundEffect>("Fractilite");
+                AerialRobot.driveSound = Content.Load<SoundEffect>("Driving");
+                buzzer = Content.Load<SoundEffect>("Buzzer");
+                teleOp = Content.Load<SoundEffect>("TeleOp");
+                start = Content.Load<SoundEffect>("TrumpetStart");
+                titleScreen = endGame;//Content.Load<SoundEffect>("CantHoldUs");
+                gamePlay = Content.Load<SoundEffect>("CantHoldUs");
+                gamePlayInstance = gamePlay.CreateInstance();
+                titleScreenInstance = titleScreen.CreateInstance();
+                endGameInstance = endGame.CreateInstance();
+                endGameInstance.IsLooped = false;
+                titleScreenInstance.IsLooped = true;
+            }
+
 
             Ball.trussHeight = trussHeight = 12;
             Ball.image = Content.Load<Texture2D>("sphere");
@@ -154,6 +189,7 @@ namespace AerialAssist
                 this.Exit();
             if (gameState == 0)
             {
+                titleScreenInstance.Play();
                 menuInput.run();
                 int act = menuInput.getAction();
                 if (act == 1)
@@ -183,6 +219,9 @@ namespace AerialAssist
                 if (firstCycle)
                 {
                     startTime = gameTime.TotalGameTime.TotalSeconds;
+                    start.Play();
+                    gamePlayInstance.Play();
+                    titleScreenInstance.Stop();
                     
                 }
                 firstCycle = false;
@@ -191,6 +230,14 @@ namespace AerialAssist
                 if (remainingTime == 0)
                 {
                     gameState = 5;
+                    buzzer.Play();
+                    endGameInstance.Play();
+                    gamePlayInstance.Stop();
+                    foreach (Robot r in robots)
+                    {
+                        r.stopSound();
+                    }
+
                 }
 
                 foreach (Robot r in robots)
@@ -201,6 +248,10 @@ namespace AerialAssist
                 {
                     Ball b = balls.ElementAt<Ball>(ball);
                     int result = b.run(balls, widthScale, heightScale);
+                    if (result > 0)
+                    {
+                        score.Play();
+                    }
                     int penalty = b.getPenaltyPoints();
                     int catchPoints = b.getCatchPoints();
                     int trussPoints = b.getTrussPoints();
@@ -285,6 +336,7 @@ namespace AerialAssist
                     Ball b = balls.ElementAt<Ball>(ball);
                     int result = b.run(balls, widthScale, heightScale);
                     int penalty = b.getPenaltyPoints();
+                    
                     if (b.getColor().Equals(Color.Red))
                     {
                         redScore += penalty;
@@ -296,6 +348,11 @@ namespace AerialAssist
 
                     if (result != -1)
                     {
+                        if (result != 0)
+                        {
+                            score.Play();
+                        }
+
                         balls.Remove(b);
                         if (b.getColor().Equals(Color.Red))
                         {
