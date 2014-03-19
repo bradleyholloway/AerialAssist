@@ -29,6 +29,11 @@ namespace AerialAssist
         private ScoreMatrix matrix;
         private int penaltyPoints;
         private bool fouled;
+        private int trussPoints;
+        private int catchPoints;
+        private bool trussed;
+        private bool catched;
+        private bool catchable;
 
         public Ball(Robot startLink, Color color, Robot r2, Robot r3)
         {
@@ -67,6 +72,7 @@ namespace AerialAssist
                     timeSinceLaunch = 0f;
                     launchPosition = location;
                     inAir = false;
+                    catchable = false;
                 }
 
                 if (z > 0)
@@ -158,6 +164,17 @@ namespace AerialAssist
             {
                 fouled = false;
             }
+            
+            if(!trussed && (((launchPosition.X < 306.278f * widthScale) && (location.X > 306.278f * widthScale)) ||((launchPosition.X > 306.278f * widthScale) && (location.X < 306.278f * widthScale))) && (location.Z > trussHeight))
+            {
+                trussed = true;
+                trussPoints = 10;
+            }
+            if ((((launchPosition.X < 306.278f * widthScale) && (location.X > 306.278f * widthScale)) || ((launchPosition.X > 306.278f * widthScale) && (location.X < 306.278f * widthScale))) && (location.Z > trussHeight))
+            {
+                catchable = true;
+            }
+            
 
             return -1;
         }
@@ -166,6 +183,18 @@ namespace AerialAssist
         {
             int temp = penaltyPoints;
             penaltyPoints = 0;
+            return temp;
+        }
+        public int getTrussPoints()
+        {
+            int temp = trussPoints;
+            trussPoints = 0;
+            return temp;
+        }
+        public int getCatchPoints()
+        {
+            int temp = catchPoints;
+            catchPoints = 0;
             return temp;
         }
 
@@ -213,6 +242,12 @@ namespace AerialAssist
 
         public void linkRobot(Robot r)
         {
+            if (!catched && catchable && location.Z > .1)
+            {
+                catched = true;
+                catchPoints = 10;
+
+            }
             isFree = false;
             linked = r;
         }
