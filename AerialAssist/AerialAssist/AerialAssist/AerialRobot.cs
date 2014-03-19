@@ -301,7 +301,7 @@ namespace AerialAssist
 
 
                     aiHandler.putCommand(new AICommand(AICommand.fireCommand, null, 300));
-                    aiHandler.putCommand(new AICommand(AICommand.driveCommand, new Vector2((color.Equals(Color.Red)) ? 700 * widthScale : 100 * widthScale, heightScale * 150), 30));
+                    aiHandler.putCommand(new AICommand(AICommand.driveCommand, new Vector2((color.Equals(Color.Red)) ? 550 * widthScale : 100 * widthScale, heightScale * 150), 30));
 
                 }
                 if (AImode == FollowAndShootAI)
@@ -630,7 +630,7 @@ namespace AerialAssist
             {
                 if (primaryZone == RedPrimary)
                 {
-                    if (target.X < redZone * widthScale)
+                    if (target.X < redZone * widthScale - 20 * widthScale)
                     {
                         aiHandler.move();
                         moved = true;
@@ -638,7 +638,7 @@ namespace AerialAssist
                 }
                 else if (primaryZone == WhitePrimary)
                 {
-                    if (target.X < blueZone * widthScale || target.X > redZone * widthScale)
+                    if (target.X < blueZone * widthScale - 20 * widthScale || target.X > redZone * widthScale + 20 * widthScale)
                     {
                         aiHandler.move();
                         moved = true;
@@ -646,7 +646,7 @@ namespace AerialAssist
                 }
                 else if (primaryZone == BluePrimary)
                 {
-                    if (target.X > blueZone * widthScale)
+                    if (target.X > blueZone * widthScale + 20 * widthScale)
                     {
                         aiHandler.move();
                         moved = true;
