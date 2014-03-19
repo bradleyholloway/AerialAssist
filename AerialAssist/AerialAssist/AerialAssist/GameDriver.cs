@@ -202,13 +202,20 @@ namespace AerialAssist
                     Ball b = balls.ElementAt<Ball>(ball);
                     int result = b.run(balls, widthScale, heightScale);
                     int penalty = b.getPenaltyPoints();
+                    int catchPoints = b.getCatchPoints();
+                    if (catchPoints != 0)
+                    {
+                        int temp = catchPoints;
+                    }
+
+                    int trussPoints = b.getTrussPoints();
                     if (b.getColor().Equals(Color.Red))
                     {
-                        redScore += penalty;
+                        redScore += penalty + catchPoints + trussPoints;
                     }
                     else
                     {
-                        blueScore += penalty;
+                        blueScore += penalty + catchPoints + trussPoints;
                     }
                     
                     if (result != -1)

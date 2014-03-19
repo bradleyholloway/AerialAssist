@@ -170,7 +170,7 @@ namespace AerialAssist
                 trussed = true;
                 trussPoints = 10;
             }
-            if ((((launchPosition.X < 306.278f * widthScale) && (location.X > 306.278f * widthScale)) || ((launchPosition.X > 306.278f * widthScale) && (location.X < 306.278f * widthScale))) && (location.Z > trussHeight))
+            if (!catched && (((launchPosition.X < 306.278f * widthScale) && (location.X > 306.278f * widthScale)) || ((launchPosition.X > 306.278f * widthScale) && (location.X < 306.278f * widthScale))) && (location.Z > trussHeight))
             {
                 catchable = true;
             }
