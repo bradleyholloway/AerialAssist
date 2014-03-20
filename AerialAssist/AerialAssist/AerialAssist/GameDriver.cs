@@ -34,6 +34,9 @@ namespace AerialAssist
         float widthScale, heightScale;
         float trussHeight;
         int redScore, blueScore;
+        int redPenalty, bluePenalty;
+        int redTruss, blueTruss;
+        int redCatch, blueCatch;
 
         List<Robot> robots;
         List<Ball> balls;
@@ -106,18 +109,18 @@ namespace AerialAssist
             widthScale = (float)graphics.GraphicsDevice.Viewport.Width / field.Width;
             heightScale = (float)graphics.GraphicsDevice.Viewport.Height / field.Height;
 
-            if(endGame == null)
+            if(titleScreenInstance == null)
             {
                 AerialRobot.launch = Content.Load<SoundEffect>("Piston");
                 score = Content.Load<SoundEffect>("Score");
                 AerialRobot.feed = Content.Load<SoundEffect>("Feed");
-                endGame = Content.Load<SoundEffect>("Fractilite");
+                endGame = Content.Load<SoundEffect>("battlescars");
                 AerialRobot.driveSound = Content.Load<SoundEffect>("Driving");
                 buzzer = Content.Load<SoundEffect>("Buzzer");
                 teleOp = Content.Load<SoundEffect>("TeleOp");
                 start = Content.Load<SoundEffect>("TrumpetStart");
                 titleScreen = endGame;//Content.Load<SoundEffect>("CantHoldUs");
-                gamePlay = Content.Load<SoundEffect>("CantHoldUs");
+                gamePlay = Content.Load<SoundEffect>("pompeii");
                 gamePlayInstance = gamePlay.CreateInstance();
                 titleScreenInstance = titleScreen.CreateInstance();
                 endGameInstance = endGame.CreateInstance();
@@ -165,6 +168,7 @@ namespace AerialAssist
             menuInput = new MenuInput(((GamePad.GetState(PlayerIndex.One).IsConnected) ? (Input)new ControllerInput(PlayerIndex.One) : (Input)new KeyboardInput()));
             menuIndex = 0;
             firstCycle = true;
+            redScore = blueScore = redPenalty = bluePenalty = redCatch = blueCatch = redTruss = blueTruss = 0;
 
         }
 
@@ -258,10 +262,16 @@ namespace AerialAssist
                     if (b.getColor().Equals(Color.Red))
                     {
                         redScore += penalty + catchPoints + trussPoints;
+                        redCatch += catchPoints;
+                        redPenalty += penalty;
+                        redTruss += trussPoints;
                     }
                     else
                     {
                         blueScore += penalty + catchPoints + trussPoints;
+                        blueCatch += catchPoints;
+                        bluePenalty += penalty;
+                        blueTruss += trussPoints;
                     }
                     
                     if (result != -1)
@@ -329,21 +339,33 @@ namespace AerialAssist
                 menuInput.run();
                 if (menuInput.getAction() != 0)
                 {
+                    endGameInstance.Stop();
                     gameState = 0;
                 }
                 for (int ball = 0; ball < balls.Count; ball++)
                 {
                     Ball b = balls.ElementAt<Ball>(ball);
                     int result = b.run(balls, widthScale, heightScale);
+                    if (result > 0)
+                    {
+                        score.Play();
+                    }
                     int penalty = b.getPenaltyPoints();
-                    
+                    int catchPoints = b.getCatchPoints();
+                    int trussPoints = b.getTrussPoints();
                     if (b.getColor().Equals(Color.Red))
                     {
-                        redScore += penalty;
+                        redScore += penalty + catchPoints + trussPoints;
+                        redCatch += catchPoints;
+                        redPenalty += penalty;
+                        redTruss += trussPoints;
                     }
                     else
                     {
-                        blueScore += penalty;
+                        blueScore += penalty + catchPoints + trussPoints;
+                        blueCatch += catchPoints;
+                        bluePenalty += penalty;
+                        blueTruss += trussPoints;
                     }
 
                     if (result != -1)
@@ -462,8 +484,16 @@ namespace AerialAssist
                 spriteBatch.DrawString(timesNewRoman, "Match Results", new Vector2(graphics.GraphicsDevice.Viewport.Width/2 - 80f * widthScale, heightScale * 25f), Color.White);
                 spriteBatch.DrawString(timesNewRoman, "Red Alliance", new Vector2(graphics.GraphicsDevice.Viewport.Width / 4 * 3 - 50f * widthScale, heightScale * 50f), Color.Red);
                 spriteBatch.DrawString(timesNewRoman, "Blue Alliance", new Vector2(graphics.GraphicsDevice.Viewport.Width / 4 - 95f * widthScale, heightScale * 50f), Color.Blue);
-                spriteBatch.DrawString(timesNewRoman, redScore + "", new Vector2(graphics.GraphicsDevice.Viewport.Width / 4 * 3 - 15f * widthScale, heightScale * 85f), Color.Red);
-                spriteBatch.DrawString(timesNewRoman, blueScore + "", new Vector2(graphics.GraphicsDevice.Viewport.Width / 4 - 30f * widthScale, heightScale * 85f), Color.Blue);
+                spriteBatch.DrawString(timesNewRoman, "Truss "+redTruss + "", new Vector2(graphics.GraphicsDevice.Viewport.Width / 4 * 3 - 15f * widthScale, heightScale * 75f), Color.Red);
+                spriteBatch.DrawString(timesNewRoman, "Truss "+blueTruss + "", new Vector2(graphics.GraphicsDevice.Viewport.Width / 4 - 30f * widthScale, heightScale * 75f), Color.Blue);
+                spriteBatch.DrawString(timesNewRoman, "Catch "+redCatch + "", new Vector2(graphics.GraphicsDevice.Viewport.Width / 4 * 3 - 15f * widthScale, heightScale * 100f), Color.Red);
+                spriteBatch.DrawString(timesNewRoman, "Catch "+blueCatch + "", new Vector2(graphics.GraphicsDevice.Viewport.Width / 4 - 30f * widthScale, heightScale * 100f), Color.Blue);
+                spriteBatch.DrawString(timesNewRoman, "Penalty "+redPenalty + "", new Vector2(graphics.GraphicsDevice.Viewport.Width / 4 * 3 - 15f * widthScale, heightScale * 125f), Color.Red);
+                spriteBatch.DrawString(timesNewRoman, "Penalty "+bluePenalty + "", new Vector2(graphics.GraphicsDevice.Viewport.Width / 4 - 30f * widthScale, heightScale * 125f), Color.Blue);
+                spriteBatch.DrawString(timesNewRoman, "Teleop " +(redScore - redTruss - redCatch - redPenalty) + "", new Vector2(graphics.GraphicsDevice.Viewport.Width / 4 * 3 - 15f * widthScale, heightScale * 150f), Color.Red);
+                spriteBatch.DrawString(timesNewRoman, "Teleop "+(blueScore - blueTruss - blueCatch - bluePenalty) + "", new Vector2(graphics.GraphicsDevice.Viewport.Width / 4 - 30f * widthScale, heightScale * 150f), Color.Blue);
+                spriteBatch.DrawString(timesNewRoman, "Total "+redScore + "", new Vector2(graphics.GraphicsDevice.Viewport.Width / 4 * 3 - 15f * widthScale, heightScale * 175f), Color.Red);
+                spriteBatch.DrawString(timesNewRoman, "Total "+blueScore + "", new Vector2(graphics.GraphicsDevice.Viewport.Width / 4 - 30f * widthScale, heightScale * 175f), Color.Blue);
             }
             
 
