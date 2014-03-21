@@ -484,16 +484,16 @@ namespace AerialAssist
                 spriteBatch.DrawString(timesNewRoman, "Match Results", new Vector2(graphics.GraphicsDevice.Viewport.Width/2 - 80f * widthScale, heightScale * 25f), Color.White);
                 spriteBatch.DrawString(timesNewRoman, "Red Alliance", new Vector2(graphics.GraphicsDevice.Viewport.Width / 4 * 3 - 50f * widthScale, heightScale * 50f), Color.Red);
                 spriteBatch.DrawString(timesNewRoman, "Blue Alliance", new Vector2(graphics.GraphicsDevice.Viewport.Width / 4 - 95f * widthScale, heightScale * 50f), Color.Blue);
-                spriteBatch.DrawString(timesNewRoman, "Truss "+redTruss + "", new Vector2(graphics.GraphicsDevice.Viewport.Width / 4 * 3 - 15f * widthScale, heightScale * 75f), Color.Red);
-                spriteBatch.DrawString(timesNewRoman, "Truss "+blueTruss + "", new Vector2(graphics.GraphicsDevice.Viewport.Width / 4 - 30f * widthScale, heightScale * 75f), Color.Blue);
-                spriteBatch.DrawString(timesNewRoman, "Catch "+redCatch + "", new Vector2(graphics.GraphicsDevice.Viewport.Width / 4 * 3 - 15f * widthScale, heightScale * 100f), Color.Red);
-                spriteBatch.DrawString(timesNewRoman, "Catch "+blueCatch + "", new Vector2(graphics.GraphicsDevice.Viewport.Width / 4 - 30f * widthScale, heightScale * 100f), Color.Blue);
-                spriteBatch.DrawString(timesNewRoman, "Penalty "+redPenalty + "", new Vector2(graphics.GraphicsDevice.Viewport.Width / 4 * 3 - 15f * widthScale, heightScale * 125f), Color.Red);
-                spriteBatch.DrawString(timesNewRoman, "Penalty "+bluePenalty + "", new Vector2(graphics.GraphicsDevice.Viewport.Width / 4 - 30f * widthScale, heightScale * 125f), Color.Blue);
-                spriteBatch.DrawString(timesNewRoman, "Teleop " +(redScore - redTruss - redCatch - redPenalty) + "", new Vector2(graphics.GraphicsDevice.Viewport.Width / 4 * 3 - 15f * widthScale, heightScale * 150f), Color.Red);
-                spriteBatch.DrawString(timesNewRoman, "Teleop "+(blueScore - blueTruss - blueCatch - bluePenalty) + "", new Vector2(graphics.GraphicsDevice.Viewport.Width / 4 - 30f * widthScale, heightScale * 150f), Color.Blue);
-                spriteBatch.DrawString(timesNewRoman, "Total "+redScore + "", new Vector2(graphics.GraphicsDevice.Viewport.Width / 4 * 3 - 15f * widthScale, heightScale * 175f), Color.Red);
-                spriteBatch.DrawString(timesNewRoman, "Total "+blueScore + "", new Vector2(graphics.GraphicsDevice.Viewport.Width / 4 - 30f * widthScale, heightScale * 175f), Color.Blue);
+                spriteBatch.DrawString(timesNewRoman, "Truss "+redTruss + "", new Vector2(graphics.GraphicsDevice.Viewport.Width / 4 * 3 - 35f * widthScale, heightScale * 75f), Color.Red);
+                spriteBatch.DrawString(timesNewRoman, "Truss "+blueTruss + "", new Vector2(graphics.GraphicsDevice.Viewport.Width / 4 - 60f * widthScale, heightScale * 75f), Color.Blue);
+                spriteBatch.DrawString(timesNewRoman, "Catch "+redCatch + "", new Vector2(graphics.GraphicsDevice.Viewport.Width / 4 * 3 - 35f * widthScale, heightScale * 100f), Color.Red);
+                spriteBatch.DrawString(timesNewRoman, "Catch "+blueCatch + "", new Vector2(graphics.GraphicsDevice.Viewport.Width / 4 - 60f * widthScale, heightScale * 100f), Color.Blue);
+                spriteBatch.DrawString(timesNewRoman, "Penalty "+redPenalty + "", new Vector2(graphics.GraphicsDevice.Viewport.Width / 4 * 3 - 35f * widthScale, heightScale * 125f), Color.Red);
+                spriteBatch.DrawString(timesNewRoman, "Penalty "+bluePenalty + "", new Vector2(graphics.GraphicsDevice.Viewport.Width / 4 - 60f * widthScale, heightScale * 125f), Color.Blue);
+                spriteBatch.DrawString(timesNewRoman, "Teleop " +(redScore - redTruss - redCatch - redPenalty) + "", new Vector2(graphics.GraphicsDevice.Viewport.Width / 4 * 3 - 35f * widthScale, heightScale * 150f), Color.Red);
+                spriteBatch.DrawString(timesNewRoman, "Teleop "+(blueScore - blueTruss - blueCatch - bluePenalty) + "", new Vector2(graphics.GraphicsDevice.Viewport.Width / 4 - 60f * widthScale, heightScale * 150f), Color.Blue);
+                spriteBatch.DrawString(timesNewRoman, "Total "+redScore + "", new Vector2(graphics.GraphicsDevice.Viewport.Width / 4 * 3 - 35f * widthScale, heightScale * 175f), Color.Red);
+                spriteBatch.DrawString(timesNewRoman, "Total "+blueScore + "", new Vector2(graphics.GraphicsDevice.Viewport.Width / 4 - 60f * widthScale, heightScale * 175f), Color.Blue);
             }
             
 
