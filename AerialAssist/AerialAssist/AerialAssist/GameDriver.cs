@@ -136,6 +136,8 @@ namespace AerialAssist
             Ball.decayConstant = .012f;
             Ball.ballAcceleration = 0.08f;
             Ball.bounceDecay = .58f;
+            Ball.onePointTop = 60 * heightScale;
+            Ball.onePointBottom = GraphicsDevice.Viewport.Height - Ball.onePointTop;
             AerialRobot.launchPower = 4f;
             AerialRobot.widthScale = widthScale;
             AerialRobot.heightScale = heightScale;

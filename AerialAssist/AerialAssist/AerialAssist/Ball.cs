@@ -16,6 +16,8 @@ namespace AerialAssist
         public static float ballAcceleration;
         public static float bounceDecay;
         public static float trussHeight;
+        public static float onePointBottom;
+        public static float onePointTop;
         
         private Vector3 location;
         private Color color;
@@ -109,6 +111,10 @@ namespace AerialAssist
                 if ((location.X < AerialRobot.minXPosition * widthScale && color.Equals(Color.Blue) || location.X > AerialRobot.maxXPosition * widthScale && color.Equals(Color.Red)) && location.Z >= trussHeight * 3/2 && location.Z <= trussHeight * 6/2)
                 {
                     return matrix.getAssistBonus() + 10;
+                }
+                if ((location.X < (AerialRobot.minXPosition + 20) * widthScale && color.Equals(Color.Blue) || location.X > (AerialRobot.maxXPosition * widthScale - 20) && color.Equals(Color.Red)) && location.Z < 3 && (location.Y < onePointTop || location.Y > onePointBottom))
+                {
+                    return matrix.getAssistBonus() + 1;
                 }
 
                 if (location.X < AerialRobot.minXPosition * widthScale || location.X > AerialRobot.maxXPosition * widthScale || Math.Abs(location.X - 306.278f * widthScale) < 8 * widthScale && Math.Abs(location.Z - trussHeight) < 4)
