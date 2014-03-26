@@ -27,6 +27,7 @@ namespace AerialAssist
         public static float minYPosition = 0f;
         public static float maxYPosition = 1f;
         public static float launchPower = 1f;
+        public static float zoneBleed = 30f;
         public static float widthScale, heightScale;
         public const int StandardAI = 0;
         public const int FollowAndShootAI = 1;
@@ -56,6 +57,7 @@ namespace AerialAssist
         private Ball activeBall;
         private bool CPU;
         private int stuckCount;
+        private double power;
 
         private AIHandler aiHandler;
         private AICommand previous;
@@ -78,11 +80,11 @@ namespace AerialAssist
             this.driveMode = driveMode;
             this.activeBall = null;
             this.CPU = CPU;
-            this.drivePID = new PID(.1,.05,.1,3);
+            this.drivePID = new PID(.05,.0005,.1,3);
             this.primaryZone = primaryZone;
             this.driveSoundInstance = driveSound.CreateInstance();
             driveSoundInstance.IsLooped = true;
-            driveSoundInstance.Volume = .350f;
+            driveSoundInstance.Volume = .310f;
             if (CPU)
             {
                 aiTurnPID = new PID(.05, .05, .05, .01);
@@ -557,7 +559,7 @@ namespace AerialAssist
                         
                             if (primaryZone == RedPrimary)
                             {
-                                if (target.X > redZone * widthScale)
+                                if (target.X > redZone * widthScale - zoneBleed * widthScale)
                                 {
                                     ballCoordinate = b.getLocation();
                                     minDistance = UTIL.distance(ballCoordinate, location);
@@ -565,7 +567,7 @@ namespace AerialAssist
                             }
                             else if (primaryZone == WhitePrimary)
                             {
-                                if (target.X > blueZone * widthScale && target.X < redZone * widthScale)
+                                if (target.X > blueZone * widthScale - zoneBleed * widthScale && target.X < redZone * widthScale + zoneBleed * widthScale)
                                 {
                                     ballCoordinate = b.getLocation();
                                     minDistance = UTIL.distance(ballCoordinate, location);
@@ -573,7 +575,7 @@ namespace AerialAssist
                             }
                             else if (primaryZone == BluePrimary)
                             {
-                                if (target.X < blueZone * widthScale)
+                                if (target.X < blueZone * widthScale + zoneBleed * widthScale)
                                 {
                                     ballCoordinate = b.getLocation();
                                     minDistance = UTIL.distance(ballCoordinate, location);
@@ -660,7 +662,7 @@ namespace AerialAssist
             {
                 if (primaryZone == RedPrimary)
                 {
-                    if (target.X < redZone * widthScale - 20 * widthScale)
+                    if (target.X < redZone * widthScale - zoneBleed * widthScale)
                     {
                         aiHandler.move();
                         moved = true;
@@ -668,7 +670,7 @@ namespace AerialAssist
                 }
                 else if (primaryZone == WhitePrimary)
                 {
-                    if (target.X < blueZone * widthScale - 20 * widthScale || target.X > redZone * widthScale + 20 * widthScale)
+                    if (target.X < blueZone * widthScale - zoneBleed * widthScale || target.X > redZone * widthScale + zoneBleed * widthScale)
                     {
                         aiHandler.move();
                         moved = true;
@@ -676,7 +678,7 @@ namespace AerialAssist
                 }
                 else if (primaryZone == BluePrimary)
                 {
-                    if (target.X > blueZone * widthScale + 20 * widthScale)
+                    if (target.X > blueZone * widthScale + zoneBleed * widthScale)
                     {
                         aiHandler.move();
                         moved = true;
@@ -712,6 +714,23 @@ namespace AerialAssist
         
         private void drive(List<Robot> robots, List<Ball> balls, float turnAxis, float powerAxis, float strafeAxis)
         {
+            double tempH = Math.Sqrt(powerAxis * powerAxis + strafeAxis * strafeAxis);
+            
+            drivePID.setDesiredValue(tempH);
+            power += drivePID.calcPID(power);
+            if (tempH == 0)
+            {
+                double theta = UTIL.normalizeDirection(-rotation + Math.Atan2(velocity.Y, velocity.X));
+
+                //powerAxis = (velocity.Y > 0 && UTIL.normalizeDirection(rotation) < Math.PI || velocity.Y < 0 && UTIL.normalizeDirection( rotation) > Math.PI) ? -1 : 1;
+                powerAxis = (float)(-velocity.Length() * Math.Cos(theta));
+                strafeAxis = (float)(velocity.Length() * Math.Sin(theta));
+                //strafeAxis = (float)(velocity.X * Math.Sin(theta));
+                tempH = velocity.Length();
+            }
+            powerAxis = (float)(power * powerAxis / tempH);
+            strafeAxis = (float)(power * strafeAxis / tempH);
+
             this.previousPosition = location;
             powerAxis *= -1;
             Vector2 tempLocation = location;
@@ -794,7 +813,7 @@ namespace AerialAssist
                     }
                     else
                     {
-                        b.pushBall(UTIL.magD(velocity.Length() * 1f + 1, UTIL.getDirectionTward(location, b.getLocation())));
+                        b.pushBall(UTIL.magD(velocity.Length() * 2.5f + 1, UTIL.getDirectionTward(Vector2.Zero, velocity)));
                     }
                 }
             }

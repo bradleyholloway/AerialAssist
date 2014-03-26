@@ -60,7 +60,7 @@ namespace AerialAssist
         {
             graphics = new GraphicsDeviceManager(this);
             
-            graphics.IsFullScreen = true;
+            graphics.IsFullScreen = false;
             keyboard1 = true;
             keyboard2 = false;
 
@@ -138,13 +138,14 @@ namespace AerialAssist
             Ball.bounceDecay = .58f;
             Ball.onePointTop = 60 * heightScale;
             Ball.onePointBottom = GraphicsDevice.Viewport.Height - Ball.onePointTop;
-            AerialRobot.launchPower = 4f;
+            AerialRobot.launchPower = 2.6f * (float)Math.Sqrt(widthScale * widthScale * heightScale * heightScale);
             AerialRobot.widthScale = widthScale;
             AerialRobot.heightScale = heightScale;
             ScoreMatrix.blueWhiteZone = .35f * widthScale * field.Width;
             ScoreMatrix.redWhiteZone = .67f * widthScale * field.Width;
             AerialRobot.redZone = .67 * field.Width;
             AerialRobot.blueZone = .35f * field.Width;
+            AerialRobot.zoneBleed = 25f;
 
             Texture2D sonic = Content.Load<Texture2D>("robot2");
             float sonicScale = .12f;
@@ -152,7 +153,7 @@ namespace AerialAssist
             float dBScale = .045f;
 
             robots = new List<Robot>();
-            robots.Add(new AerialRobot(diamondBack, new Vector2(dBScale * widthScale, dBScale * heightScale), new Vector2(widthScale * 320f, heightScale * 100f), Color.Red, .00001f, 0f, new KeyboardInput(PlayerIndex.One), AerialRobot.UnicornDrive, !keyboard1, AerialRobot.RecieveAndShootAI, AerialRobot.WhitePrimary));
+            robots.Add(new AerialRobot(diamondBack, new Vector2(dBScale * widthScale, dBScale * heightScale), new Vector2(widthScale * 320f, heightScale * 100f), Color.Red, .00001f, 0f, new KeyboardInput(PlayerIndex.One), AerialRobot.ArcadeDrive, !keyboard1, AerialRobot.RecieveAndShootAI, AerialRobot.WhitePrimary));
             robots.Add(new AerialRobot(sonic, new Vector2(sonicScale * widthScale, sonicScale * heightScale), new Vector2(widthScale * 260f, heightScale * 100f), Color.Blue, (float)Math.PI+.00001f, 0f, new KeyboardInput(PlayerIndex.Two), AerialRobot.UnicornDrive, !keyboard2, AerialRobot.RecieveAndShootAI, AerialRobot.WhitePrimary));
             robots.Add(new AerialRobot(diamondBack, new Vector2(dBScale * widthScale, dBScale * heightScale), new Vector2(widthScale * 320f, heightScale * 150f), Color.Red, .00001f, 0f, new ControllerInput(PlayerIndex.One), AerialRobot.ArcadeDrive, !GamePad.GetState(PlayerIndex.One).IsConnected, AerialRobot.RecieveAndShootAI, AerialRobot.RedPrimary));
             robots.Add(new AerialRobot(sonic, new Vector2(sonicScale * widthScale, sonicScale * heightScale), new Vector2(widthScale * 260f, heightScale * 150f), Color.Blue, (float)Math.PI + .00001f, 0f, new ControllerInput(PlayerIndex.Two), AerialRobot.ArcadeDrive, !GamePad.GetState(PlayerIndex.Two).IsConnected, AerialRobot.RecieveAndShootAI, AerialRobot.BluePrimary));
@@ -263,17 +264,39 @@ namespace AerialAssist
                     int trussPoints = b.getTrussPoints();
                     if (b.getColor().Equals(Color.Red))
                     {
-                        redScore += penalty + catchPoints + trussPoints;
-                        redCatch += catchPoints;
-                        redPenalty += penalty;
-                        redTruss += trussPoints;
+                        redScore += catchPoints + trussPoints;
+                        blueScore -= penalty;
+                        if (catchPoints != 0)
+                        {
+
+                            redCatch += catchPoints;
+                        }
+                        
+                        if (penalty != 0)
+                        {
+                            bluePenalty -= penalty;
+                        }
+                        if (trussPoints != 0)
+                        {
+                            redTruss += trussPoints;
+                        }
                     }
                     else
                     {
-                        blueScore += penalty + catchPoints + trussPoints;
-                        blueCatch += catchPoints;
-                        bluePenalty += penalty;
-                        blueTruss += trussPoints;
+                        blueScore += catchPoints + trussPoints;
+                        redScore -= penalty;
+                        if (catchPoints != 0)
+                        {
+                            blueCatch += catchPoints;
+                        }
+                        if (penalty != 0)
+                        {
+                            redPenalty -= penalty;
+                        }
+                        if (trussPoints != 0)
+                        {
+                            blueTruss += trussPoints;
+                        }
                     }
                     
                     if (result != -1)
@@ -359,14 +382,21 @@ namespace AerialAssist
                     {
                         redScore += penalty + catchPoints + trussPoints;
                         redCatch += catchPoints;
-                        redPenalty += penalty;
+                        if (penalty != 0)
+                        {
+
+                            bluePenalty -= penalty;
+                        }
                         redTruss += trussPoints;
                     }
                     else
                     {
                         blueScore += penalty + catchPoints + trussPoints;
                         blueCatch += catchPoints;
-                        bluePenalty += penalty;
+                        if (penalty != 0)
+                        {
+                            redPenalty -= penalty;
+                        }
                         blueTruss += trussPoints;
                     }
 

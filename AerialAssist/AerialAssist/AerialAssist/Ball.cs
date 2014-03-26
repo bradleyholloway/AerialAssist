@@ -214,7 +214,7 @@ namespace AerialAssist
             {
                 contact = BradleyXboxUtils.UTIL.magD(1, BradleyXboxUtils.UTIL.getDirectionTward(Vector2.Zero, contact));
             }
-            contact *= .5f;
+            
             float velocity = launchVelocity.Z - ballAcceleration * timeSinceLaunch;
             if (getHeight() == 0f)
             {
