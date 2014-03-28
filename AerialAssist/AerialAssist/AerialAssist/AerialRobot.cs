@@ -64,6 +64,7 @@ namespace AerialAssist
         private double cycles;
         private PID aiDrivePID;
         private PID aiTurnPID;
+        private float angularMomentum;
         private int primaryZone;
         private Vector2 previousPosition;
 
@@ -80,7 +81,8 @@ namespace AerialAssist
             this.driveMode = driveMode;
             this.activeBall = null;
             this.CPU = CPU;
-            this.drivePID = new PID(.05,.0005,.1,3);
+            this.drivePID = new PID(.05,.0005,.1, 1);
+            this.turnPID = new PID(.09, .005, 0, .2);
             this.primaryZone = primaryZone;
             this.driveSoundInstance = driveSound.CreateInstance();
             driveSoundInstance.IsLooped = true;
@@ -90,7 +92,7 @@ namespace AerialAssist
                 aiTurnPID = new PID(.05, .05, .05, .01);
                 aiTurnPID.setMinDoneCycles(20);
                 aiTurnPID.setDoneRange(.1);
-                aiDrivePID = new PID(.02, 0, .05, .01);
+                aiDrivePID = new PID(.01, 0, .05, .01);
                 aiHandler = new AIHandler();
                 bool high1;
                 if (primaryZone == RedPrimary)
@@ -187,7 +189,7 @@ namespace AerialAssist
                 if (AImode == RecieveAndShootAI)
                 {
 
-                    //aiHandler.putCommand(new AICommand(AICommand.positionCommand, new Vector2(200 * ((color.Equals(Color.Red)) ? 1 : -1), 0), 300.0));
+                    aiHandler.putCommand(new AICommand(AICommand.positionCommand, new Vector2(200 * widthScale * ((color.Equals(Color.Red)) ? 1 : -1), 0), 300.0));
                     aiHandler.putCommand(new AICommand(AICommand.positionCommand, new Vector2(0, 0), 300.0));
 
 
@@ -734,19 +736,25 @@ namespace AerialAssist
             this.previousPosition = location;
             powerAxis *= -1;
             Vector2 tempLocation = location;
+
             float tempRotation = rotation;
+            turnPID.setDesiredValue(turnAxis);
+            angularMomentum += (float)turnPID.calcPID(angularMomentum);
+            tempRotation = rotation + angularMomentum * turnConst;// (float)turnPID.calcPID(rotation);
+            
+
             if (driveMode == ArcadeDrive)
             {
                 
                 tempLocation = location + new Vector2(powerAxis * ArcadeDriveConstant * (float)Math.Cos(rotation), powerAxis * ArcadeDriveConstant * (float)Math.Sin(rotation));
-                tempRotation = rotation + turnAxis * turnConst;
+                
             }
             else if (driveMode == FieldCentric)
             {
                 
                 tempLocation = location + new Vector2(strafeAxis * McCannumDriveConstant, -powerAxis * McCannumDriveConstant);
 
-                tempRotation = rotation + turnAxis * turnConst;
+                
             }
             else if (driveMode == McCannumDrive)
             {
@@ -754,7 +762,7 @@ namespace AerialAssist
                 tempLocation = location + new Vector2(-strafeAxis * (float)Math.Cos(rotation - Math.PI/2) * McCannumDriveConstant, -strafeAxis * (float)Math.Sin(rotation - Math.PI/2) * McCannumDriveConstant);
                 tempLocation+= new Vector2(powerAxis * McCannumDriveConstant * (float)Math.Cos(rotation), powerAxis * McCannumDriveConstant * (float)Math.Sin(rotation));
 
-                tempRotation = rotation + turnAxis * turnConst;
+                
             }
             else if (driveMode == UnicornDrive)
             {
@@ -762,7 +770,7 @@ namespace AerialAssist
                 tempLocation = location + new Vector2(-strafeAxis * (float)Math.Cos(rotation - Math.PI / 2) * UnicornDriveConstant, -strafeAxis * (float)Math.Sin(rotation - Math.PI / 2) * UnicornDriveConstant);
                 tempLocation += new Vector2(powerAxis * UnicornDriveConstant * (float)Math.Cos(rotation), powerAxis * UnicornDriveConstant * (float)Math.Sin(rotation));
 
-                tempRotation = rotation + turnAxis * turnConst;
+                
 
                 
             }
