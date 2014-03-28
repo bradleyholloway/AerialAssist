@@ -82,14 +82,14 @@ namespace AerialAssist
             this.activeBall = null;
             this.CPU = CPU;
             this.drivePID = new PID(.05,.0005,.1, 1);
-            this.turnPID = new PID(.09, .005, 0, .2);
+            this.turnPID = new PID(.095, .005, 0, .2);
             this.primaryZone = primaryZone;
             this.driveSoundInstance = driveSound.CreateInstance();
             driveSoundInstance.IsLooped = true;
             driveSoundInstance.Volume = .310f;
             if (CPU)
             {
-                aiTurnPID = new PID(.05, .05, .05, .01);
+                aiTurnPID = new PID(.15, .05, .05, .01);
                 aiTurnPID.setMinDoneCycles(20);
                 aiTurnPID.setDoneRange(.1);
                 aiDrivePID = new PID(.01, 0, .05, .01);
