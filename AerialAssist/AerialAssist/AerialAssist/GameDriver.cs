@@ -25,7 +25,9 @@ namespace AerialAssist
         bool keyboard1, keyboard2;
         MenuInput menuInput;
         List<MenuItem> menuItems;
-        int menuIndex;
+        List<MenuItem> strategyMenu;
+        List<MenuItem> zoneMenu;
+        int menuIndex, bmenuIndex, rmenuIndex;
         bool firstCycle;
 
         int gameState = 0;
@@ -37,6 +39,12 @@ namespace AerialAssist
         int redPenalty, bluePenalty;
         int redTruss, blueTruss;
         int redCatch, blueCatch;
+        int red1Strat = -1, red2Strat = -1, red3Strat = -1;
+        int blue1Strat = -1, blue2Strat = -1, blue3Strat = -1;
+        int red1Zone = -1, red2Zone = -1, red3Zone = -1;
+        int blue1Zone = -1, blue2Zone = -1, blue3Zone = -1;
+        MenuInput redTeamInput = null;
+        MenuInput blueTeamInput = null;
 
         List<Robot> robots;
         List<Ball> balls;
@@ -60,7 +68,7 @@ namespace AerialAssist
         {
             graphics = new GraphicsDeviceManager(this);
             
-            graphics.IsFullScreen = true;
+            graphics.IsFullScreen = false;
             keyboard1 = true;
             keyboard2 = false;
 
@@ -82,6 +90,16 @@ namespace AerialAssist
             menuItems.Add(new MenuItem("1  Keyboard", new Vector2(100f, 250f), Color.Red, 2));
             menuItems.Add(new MenuItem("2  Keyboard", new Vector2(100f, 300f), Color.Red, 3));
             menuItems.Add(new MenuItem("Quit", new Vector2(100f, 350f), Color.Black, 99));
+
+            strategyMenu = new List<MenuItem>();
+            strategyMenu.Add(new MenuItem("Standard", new Vector2(0,0), Color.White, AerialRobot.StandardAI));
+            strategyMenu.Add(new MenuItem("Recieve and Shoot" , new Vector2(0,100), Color.White, AerialRobot.RecieveAndShootAI));
+            strategyMenu.Add(new MenuItem("Follow and Shoot" , new Vector2(0, 200), Color.White, AerialRobot.FollowAndShootAI));
+
+            zoneMenu = new List<MenuItem>();
+            zoneMenu.Add(new MenuItem("Red Zone", new Vector2(0, 0), Color.Red, AerialRobot.RedPrimary));
+            zoneMenu.Add(new MenuItem("White Zone", new Vector2(0, 100), Color.White, AerialRobot.WhitePrimary));
+            zoneMenu.Add(new MenuItem("Blue Zone", new Vector2(0, 200), Color.Blue, AerialRobot.BluePrimary));
 
             AerialRobot.ArcadeDriveConstant = 4f;
             AerialRobot.McCannumDriveConstant = 3f;
@@ -153,12 +171,12 @@ namespace AerialAssist
             float dBScale = .045f;
 
             robots = new List<Robot>();
-            robots.Add(new AerialRobot(diamondBack, new Vector2(dBScale * widthScale, dBScale * heightScale), new Vector2(widthScale * 320f, heightScale * 100f), Color.Red, .00001f, 0f, new KeyboardInput(PlayerIndex.One), AerialRobot.McCannumDrive, !keyboard1, AerialRobot.RecieveAndShootAI, AerialRobot.WhitePrimary));
-            robots.Add(new AerialRobot(sonic, new Vector2(sonicScale * widthScale, sonicScale * heightScale), new Vector2(widthScale * 260f, heightScale * 100f), Color.Blue, (float)Math.PI+.00001f, 0f, new KeyboardInput(PlayerIndex.Two), AerialRobot.McCannumDrive, !keyboard2, AerialRobot.RecieveAndShootAI, AerialRobot.WhitePrimary));
-            robots.Add(new AerialRobot(diamondBack, new Vector2(dBScale * widthScale, dBScale * heightScale), new Vector2(widthScale * 320f, heightScale * 150f), Color.Red, .00001f, 0f, new ControllerInput(PlayerIndex.One), AerialRobot.McCannumDrive, !GamePad.GetState(PlayerIndex.One).IsConnected, AerialRobot.RecieveAndShootAI, AerialRobot.RedPrimary));
-            robots.Add(new AerialRobot(sonic, new Vector2(sonicScale * widthScale, sonicScale * heightScale), new Vector2(widthScale * 260f, heightScale * 150f), Color.Blue, (float)Math.PI + .00001f, 0f, new ControllerInput(PlayerIndex.Two), AerialRobot.McCannumDrive, !GamePad.GetState(PlayerIndex.Two).IsConnected, AerialRobot.RecieveAndShootAI, AerialRobot.BluePrimary));
-            robots.Add(new AerialRobot(diamondBack, new Vector2(dBScale * widthScale, dBScale * heightScale), new Vector2(widthScale * 320f, heightScale * 200f), Color.Red, .00001f, 0f, new ControllerInput(PlayerIndex.Three), AerialRobot.McCannumDrive, !GamePad.GetState(PlayerIndex.Three).IsConnected, AerialRobot.PassAI, AerialRobot.BluePrimary));
-            robots.Add(new AerialRobot(sonic, new Vector2(sonicScale * widthScale, sonicScale * heightScale), new Vector2(widthScale * 260f, heightScale * 200f), Color.Blue, (float)Math.PI + .00001f, 0f, new ControllerInput(PlayerIndex.Four), AerialRobot.McCannumDrive, !GamePad.GetState(PlayerIndex.Four).IsConnected, AerialRobot.PassAI, AerialRobot.RedPrimary));
+            robots.Add(new AerialRobot(diamondBack, new Vector2(dBScale * widthScale, dBScale * heightScale), new Vector2(widthScale * 320f, heightScale * 100f), Color.Red, .00001f, 0f, new KeyboardInput(PlayerIndex.One), AerialRobot.McCannumDrive, !keyboard1, red1Strat, red1Zone));
+            robots.Add(new AerialRobot(sonic, new Vector2(sonicScale * widthScale, sonicScale * heightScale), new Vector2(widthScale * 260f, heightScale * 100f), Color.Blue, (float)Math.PI+.00001f, 0f, new KeyboardInput(PlayerIndex.Two), AerialRobot.McCannumDrive, !keyboard2, blue1Strat, blue1Zone));
+            robots.Add(new AerialRobot(diamondBack, new Vector2(dBScale * widthScale, dBScale * heightScale), new Vector2(widthScale * 320f, heightScale * 150f), Color.Red, .00001f, 0f, new ControllerInput(PlayerIndex.One), AerialRobot.McCannumDrive, !GamePad.GetState(PlayerIndex.One).IsConnected, red2Strat, red2Zone));
+            robots.Add(new AerialRobot(sonic, new Vector2(sonicScale * widthScale, sonicScale * heightScale), new Vector2(widthScale * 260f, heightScale * 150f), Color.Blue, (float)Math.PI + .00001f, 0f, new ControllerInput(PlayerIndex.Two), AerialRobot.McCannumDrive, !GamePad.GetState(PlayerIndex.Two).IsConnected, blue2Strat, blue2Zone));
+            robots.Add(new AerialRobot(diamondBack, new Vector2(dBScale * widthScale, dBScale * heightScale), new Vector2(widthScale * 320f, heightScale * 200f), Color.Red, .00001f, 0f, new ControllerInput(PlayerIndex.Three), AerialRobot.McCannumDrive, !GamePad.GetState(PlayerIndex.Three).IsConnected, red3Strat, red3Zone));
+            robots.Add(new AerialRobot(sonic, new Vector2(sonicScale * widthScale, sonicScale * heightScale), new Vector2(widthScale * 260f, heightScale * 200f), Color.Blue, (float)Math.PI + .00001f, 0f, new ControllerInput(PlayerIndex.Four), AerialRobot.McCannumDrive, !GamePad.GetState(PlayerIndex.Four).IsConnected, blue3Strat, blue3Zone));
 
             balls = new List<Ball>();
             balls.Add(new Ball(robots.ElementAt<Robot>(0), Color.Red, robots.ElementAt<Robot>(2), robots.ElementAt<Robot>(4)));
@@ -342,21 +360,21 @@ namespace AerialAssist
             {
                 keyboard1 = true;
                 keyboard2 = false;
-                gameState = 1;
+                gameState = 7;
                 LoadContent();
             }
             else if (gameState == 3)
             {
                 keyboard1 = true;
                 keyboard2 = true;
-                gameState = 1;
+                gameState = 7;
                 LoadContent();
             }
             else if (gameState == 4)
             {
                 keyboard1 = false;
                 keyboard2 = false;
-                gameState = 1;
+                gameState = 7;
                 LoadContent();
             }
             else if (gameState == 5)
@@ -445,6 +463,282 @@ namespace AerialAssist
                 }
                 
             }
+            else if (gameState == 7) //Select Roles
+            {
+                red1Strat = -1;// AerialRobot.FollowAndShootAI;
+                red1Zone = -1;//AerialRobot.BluePrimary;
+
+                red2Strat = -1;//AerialRobot.RecieveAndShootAI;
+                red2Zone = -1;//AerialRobot.WhitePrimary;
+
+                red3Strat = -1;//AerialRobot.RecieveAndShootAI;
+                red3Zone = -1;//AerialRobot.RedPrimary;
+
+                blue1Strat = -1;//AerialRobot.FollowAndShootAI;
+                blue1Zone = -1;//AerialRobot.RedPrimary;
+
+                blue2Strat = -1;//AerialRobot.RecieveAndShootAI;
+                blue2Zone = -1;//AerialRobot.WhitePrimary;
+
+                blue3Strat = -1;//AerialRobot.RecieveAndShootAI;
+                blue3Zone = -1;//AerialRobot.BluePrimary;
+
+                Input blueTeamI = null;
+                Input redTeamI = null;
+
+                if (keyboard2)
+                {
+                    blueTeamI = new KeyboardInput(PlayerIndex.Two);
+                    blue1Strat = 0;
+                    blue1Zone = 0;
+                }
+
+                if (GamePad.GetState(PlayerIndex.Two).IsConnected)
+                {
+                    blueTeamI = new ControllerInput(PlayerIndex.Two);
+                    blue2Strat = 0;
+                    blue2Zone = 0;
+                }
+
+                if (GamePad.GetState(PlayerIndex.Four).IsConnected)
+                {
+                    blue3Strat = 0;
+                    blue3Zone = 0;
+                }
+
+
+                if (keyboard1)
+                {
+                    redTeamI = new KeyboardInput(PlayerIndex.One);
+                    red1Strat = 0;
+                    red1Zone = 0;
+                }
+
+                if (GamePad.GetState(PlayerIndex.One).IsConnected)
+                {
+                    redTeamI = new ControllerInput(PlayerIndex.One);
+                    red2Zone = 0;
+                    red2Zone = 0;
+                }
+
+                if (GamePad.GetState(PlayerIndex.Three).IsConnected)
+                {
+                    red3Zone = 0;
+                    red3Strat = 0;
+                }
+                if (blueTeamI != null)
+                {
+                    blueTeamInput = new MenuInput(blueTeamI);
+                }
+                else
+                {
+                    blueTeamInput = null;
+                }
+                if (redTeamI != null)
+                {
+                    redTeamInput = new MenuInput(redTeamI);
+                }
+                else
+                {
+                    redTeamInput = null;
+                }
+                
+                gameState = 8;
+                
+            }
+            else if (gameState == 8)
+            {
+                titleScreenInstance.Play();
+
+                if (redTeamInput != null)
+                {
+
+                    redTeamInput.run();
+                    int act = redTeamInput.getAction();
+                    if (red1Zone == -1 || red2Zone == -1 || red3Zone == -1)
+                    {
+                        if (act == 1)
+                        {
+                            rmenuIndex--;
+                            if (rmenuIndex == -1)
+                            {
+                                rmenuIndex = zoneMenu.Count - 1;
+                            }
+                        }
+                        else if (act == -1)
+                        {
+                            rmenuIndex++;
+                            if (rmenuIndex == zoneMenu.Count)
+                            {
+                                rmenuIndex = 0;
+                            }
+                        }
+                        else if (act == 3)
+                        {
+                            int temp = zoneMenu.ElementAt<MenuItem>(rmenuIndex).point();
+                            if (red1Zone == -1)
+                            {
+                                red1Zone = temp;
+                            }
+                            else if (red2Zone == -1)
+                            {
+                                red2Zone = temp;
+                            }
+                            else if (red3Zone == -1)
+                            {
+                                red3Zone = temp;
+                            }
+
+                        }
+                    }// If zones
+                    else
+                    {
+                        if (red1Strat == -1 || red2Strat == -1 || red3Strat == -1)
+                        {
+                            if (act == 1)
+                            {
+                                rmenuIndex--;
+                                if (rmenuIndex == -1)
+                                {
+                                    rmenuIndex = strategyMenu.Count - 1;
+                                }
+                            }
+                            else if (act == -1)
+                            {
+                                rmenuIndex++;
+                                if (rmenuIndex == strategyMenu.Count)
+                                {
+                                    rmenuIndex = 0;
+                                }
+                            }
+                            else if (act == 3)
+                            {
+                                int temp = strategyMenu.ElementAt<MenuItem>(rmenuIndex).point();
+                                if (red1Strat == -1)
+                                {
+                                    red1Strat = temp;
+                                }
+                                else if (red2Strat == -1)
+                                {
+                                    red2Strat = temp;
+                                }
+                                else if (red3Strat == -1)
+                                {
+                                    red3Strat = temp;
+                                }
+
+                            }
+                        }//If strategies not done
+                    }//If zone done
+                }//red Input != null
+                else
+                {
+                    red1Zone = AerialRobot.BluePrimary;
+                    red1Strat = AerialRobot.FollowAndShootAI;
+                    red2Zone = AerialRobot.WhitePrimary;
+                    red2Strat = AerialRobot.RecieveAndShootAI;
+                    red3Zone = AerialRobot.RedPrimary;
+                    red3Strat = AerialRobot.RecieveAndShootAI;
+                }
+
+                //BLUE
+                if (blueTeamInput != null)
+                {
+
+                    blueTeamInput.run();
+                    int act = blueTeamInput.getAction();
+                    if (blue1Zone == -1 || blue2Zone == -1 || blue3Zone == -1)
+                    {
+                        if (act == 1)
+                        {
+                            bmenuIndex--;
+                            if (bmenuIndex == -1)
+                            {
+                                bmenuIndex = zoneMenu.Count - 1;
+                            }
+                        }
+                        else if (act == -1)
+                        {
+                            bmenuIndex++;
+                            if (bmenuIndex == zoneMenu.Count)
+                            {
+                                bmenuIndex = 0;
+                            }
+                        }
+                        else if (act == 3)
+                        {
+                            int temp = zoneMenu.ElementAt<MenuItem>(bmenuIndex).point();
+                            if (blue1Zone == -1)
+                            {
+                                blue1Zone = temp;
+                            }
+                            else if (blue2Zone == -1)
+                            {
+                                blue2Zone = temp;
+                            }
+                            else if (blue3Zone == -1)
+                            {
+                                blue3Zone = temp;
+                            }
+
+                        }
+                    }// If zones
+                    else
+                    {
+                        if (blue1Strat == -1 || blue2Strat == -1 || blue3Strat == -1)
+                        {
+                            if (act == 1)
+                            {
+                                bmenuIndex--;
+                                if (bmenuIndex == -1)
+                                {
+                                    bmenuIndex = strategyMenu.Count - 1;
+                                }
+                            }
+                            else if (act == -1)
+                            {
+                                bmenuIndex++;
+                                if (bmenuIndex == strategyMenu.Count)
+                                {
+                                    bmenuIndex = 0;
+                                }
+                            }
+                            else if (act == 3)
+                            {
+                                int temp = strategyMenu.ElementAt<MenuItem>(bmenuIndex).point();
+                                if (blue1Strat == -1)
+                                {
+                                    blue1Strat = temp;
+                                }
+                                else if (blue2Strat == -1)
+                                {
+                                    blue2Strat = temp;
+                                }
+                                else if (blue3Strat == -1)
+                                {
+                                    blue3Strat = temp;
+                                }
+
+                            }
+                        }//If strategies not done
+                    }//If zone done
+                }//Blue Input != null
+                else
+                {
+                    blue1Zone = AerialRobot.RedPrimary;
+                    blue1Strat = AerialRobot.FollowAndShootAI;
+                    blue2Zone = AerialRobot.WhitePrimary;
+                    blue2Strat = AerialRobot.RecieveAndShootAI;
+                    blue3Zone = AerialRobot.BluePrimary;
+                    blue3Strat = AerialRobot.RecieveAndShootAI;
+                }
+
+                if (blue1Strat != -1 && blue2Strat != -1 && blue3Strat != -1 && red1Strat != -1 && red2Strat != -1 && red3Strat != -1)
+                {
+                    gameState = 1;
+                    LoadContent();
+                }
+            }
             else if (gameState == 99)
             {
                 this.Exit();
@@ -526,6 +820,53 @@ namespace AerialAssist
                 spriteBatch.DrawString(timesNewRoman, "Teleop "+(blueScore - blueTruss - blueCatch - bluePenalty) + "", new Vector2(graphics.GraphicsDevice.Viewport.Width / 4 - 60f * widthScale, heightScale * 150f), Color.Blue);
                 spriteBatch.DrawString(timesNewRoman, "Total "+redScore + "", new Vector2(graphics.GraphicsDevice.Viewport.Width / 4 * 3 - 35f * widthScale, heightScale * 175f), Color.Red);
                 spriteBatch.DrawString(timesNewRoman, "Total "+blueScore + "", new Vector2(graphics.GraphicsDevice.Viewport.Width / 4 - 60f * widthScale, heightScale * 175f), Color.Blue);
+            }
+
+            if (gameState == 8)
+            {
+                if (redTeamInput != null)
+                {
+                    Vector2 red = new Vector2(GraphicsDevice.Viewport.Width / 2, 50);
+                    if (red1Zone == -1 || red2Zone == -1 || red3Zone == -1)
+                    {
+                        foreach (MenuItem m in zoneMenu)
+                        {
+                            spriteBatch.DrawString(timesNewRoman, m.text(), m.location() + red, m.color());
+                        }
+                        spriteBatch.Draw(Ball.image, zoneMenu.ElementAt<MenuItem>(rmenuIndex).location() + new Vector2(-45, 5) + red, null, Color.Red, 0f, Vector2.Zero, new Vector2(.2f, .2f), SpriteEffects.None, 0f);
+                    }
+                    else if (red1Strat == -1 || red2Strat == -1 || red3Strat == -1)
+                    {
+                        foreach (MenuItem m in strategyMenu)
+                        {
+                            spriteBatch.DrawString(timesNewRoman, m.text(), m.location() + red, m.color());
+                        }
+                        spriteBatch.Draw(Ball.image, strategyMenu.ElementAt<MenuItem>(rmenuIndex).location() + new Vector2(-45, 5) + red, null, Color.Red, 0f, Vector2.Zero, new Vector2(.2f, .2f), SpriteEffects.None, 0f);
+                    }
+                }
+                if (blueTeamInput != null)
+                {
+                    Vector2 blue = new Vector2(50, 50);
+                    if (blue1Zone == -1 || blue2Zone == -1 || blue3Zone == -1)
+                    {
+                        foreach (MenuItem m in zoneMenu)
+                        {
+                            spriteBatch.DrawString(timesNewRoman, m.text(), m.location() + blue, m.color());
+                        }
+                        spriteBatch.Draw(Ball.image, zoneMenu.ElementAt<MenuItem>(bmenuIndex).location() + new Vector2(-45, 5) + blue, null, Color.Blue, 0f, Vector2.Zero, new Vector2(.2f, .2f), SpriteEffects.None, 0f);
+                    }
+                    else if (blue1Strat == -1 || blue2Strat == -1 || blue3Strat == -1)
+                    {
+                        foreach (MenuItem m in strategyMenu)
+                        {
+                            spriteBatch.DrawString(timesNewRoman, m.text(), m.location() + blue, m.color());
+                        }
+                        spriteBatch.Draw(Ball.image, strategyMenu.ElementAt<MenuItem>(bmenuIndex).location() + new Vector2(-45, 5) + blue, null, Color.Blue, 0f, Vector2.Zero, new Vector2(.2f, .2f), SpriteEffects.None, 0f);
+                    }
+                }
+
+
+
             }
             
 
