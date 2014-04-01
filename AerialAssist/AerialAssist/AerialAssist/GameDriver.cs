@@ -28,7 +28,7 @@ namespace AerialAssist
         List<MenuItem> strategyMenu;
         List<MenuItem> zoneMenu;
         int menuIndex, bmenuIndex, rmenuIndex;
-        bool firstCycle;
+        bool firstCycle, pressed;
 
         int gameState = 0;
         Texture2D field;
@@ -211,7 +211,22 @@ namespace AerialAssist
         {
             // Allows the game to exit
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                this.Exit();
+            {
+                if (gameState == 0 && !pressed)
+                {
+                    this.Exit();
+                }
+                else
+                {
+                    gameState = 0;
+                    pressed = true;
+                }
+            }
+            else
+            {
+                pressed = false;
+            }
+                
             if (gameState == 0)
             {
                 titleScreenInstance.Play();
@@ -826,7 +841,7 @@ namespace AerialAssist
             {
                 if (redTeamInput != null)
                 {
-                    Vector2 red = new Vector2(GraphicsDevice.Viewport.Width / 2, 50);
+                    Vector2 red = new Vector2(GraphicsDevice.Viewport.Width / 2 + 100, 50);
                     if (red1Zone == -1 || red2Zone == -1 || red3Zone == -1)
                     {
                         foreach (MenuItem m in zoneMenu)
@@ -846,7 +861,7 @@ namespace AerialAssist
                 }
                 if (blueTeamInput != null)
                 {
-                    Vector2 blue = new Vector2(50, 50);
+                    Vector2 blue = new Vector2(150, 50);
                     if (blue1Zone == -1 || blue2Zone == -1 || blue3Zone == -1)
                     {
                         foreach (MenuItem m in zoneMenu)

@@ -814,7 +814,7 @@ namespace AerialAssist
             {
                 if(!b.Equals(activeBall) && UTIL.distance(location, b.getLocation()) < Ball.radius/2 && b.getHeight() < 1f && b.getIsFree()) 
                 {
-                    if ((driverInput.getLeftTrigger() > .5 || (CPU && aiHandler.get().getType() != AICommand.defenseCommand && aiHandler.get().getType() != AICommand.driveCommand)) && Math.Abs(UTIL.normalizeDirection(rotation) - UTIL.normalizeDirection(UTIL.getDirectionTward(location, b.getLocation()))) < .6 && activeBall== null)
+                    if ((driverInput.getLeftTrigger() > .5 || (CPU && this.color.Equals(b.getColor()) && aiHandler.get().getType() != AICommand.defenseCommand && aiHandler.get().getType() != AICommand.driveCommand)) && Math.Abs(UTIL.normalizeDirection(rotation) - UTIL.normalizeDirection(UTIL.getDirectionTward(location, b.getLocation()))) < .6 && activeBall== null)
                     {
                         feed.Play();
                         b.linkRobot(this);

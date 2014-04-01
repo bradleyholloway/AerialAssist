@@ -117,7 +117,7 @@ namespace AerialAssist
                     return matrix.getAssistBonus() + 1;
                 }
 
-                if (location.X < AerialRobot.minXPosition * widthScale || location.X > AerialRobot.maxXPosition * widthScale || Math.Abs(location.X - 306.278f * widthScale) < 8 * widthScale && Math.Abs(location.Z - trussHeight) < 4)
+                if (location.X < AerialRobot.minXPosition * widthScale || location.X > AerialRobot.maxXPosition * widthScale || Math.Abs(location.X - 304.278f * widthScale) < 8 * widthScale && Math.Abs(location.Z - trussHeight) < 4)
                 {
                     launchPosition = location;
                     float velocity = launchVelocity.Z - ballAcceleration * timeSinceLaunch;
@@ -171,12 +171,12 @@ namespace AerialAssist
                 fouled = false;
             }
             
-            if(!trussed && (((launchPosition.X < 306.278f * widthScale) && (location.X > 306.278f * widthScale)) ||((launchPosition.X > 306.278f * widthScale) && (location.X < 306.278f * widthScale))) && (location.Z > trussHeight))
+            if(!trussed && (((launchPosition.X < 304.278f * widthScale) && (location.X > 304.278f * widthScale)) ||((launchPosition.X > 304.278f * widthScale) && (location.X < 304.278f * widthScale))) && (location.Z > trussHeight))
             {
                 trussed = true;
                 trussPoints = 10;
             }
-            if (!catched && (((launchPosition.X < 306.278f * widthScale) && (location.X > 306.278f * widthScale)) || ((launchPosition.X > 306.278f * widthScale) && (location.X < 306.278f * widthScale))) && (location.Z > trussHeight))
+            if (!catched && (((launchPosition.X < 304.278f * widthScale) && (location.X > 304.278f * widthScale)) || ((launchPosition.X > 304.278f * widthScale) && (location.X < 304.278f * widthScale))) && (location.Z > trussHeight))
             {
                 catchable = true;
             }
