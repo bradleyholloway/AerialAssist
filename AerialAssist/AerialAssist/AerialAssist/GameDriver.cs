@@ -155,7 +155,7 @@ namespace AerialAssist
             Ball.bounceDecay = .58f;
             Ball.onePointTop = 60 * heightScale;
             Ball.onePointBottom = GraphicsDevice.Viewport.Height - Ball.onePointTop;
-            AerialRobot.launchPower = 2.6f * (float)Math.Sqrt(widthScale * widthScale * heightScale * heightScale);
+            AerialRobot.launchPower = 2.0f * (float)Math.Sqrt(widthScale * widthScale * heightScale * heightScale);
             AerialRobot.widthScale = widthScale;
             AerialRobot.heightScale = heightScale;
             ScoreMatrix.blueWhiteZone = .35f * widthScale * field.Width;
@@ -172,8 +172,8 @@ namespace AerialAssist
             robots = new List<Robot>();
             robots.Add(new AerialRobot(diamondBack, new Vector2(dBScale * widthScale, dBScale * heightScale), new Vector2(widthScale * 320f, heightScale * 100f), Color.Red, .00001f, 0f, new KeyboardInput(PlayerIndex.One), AerialRobot.McCannumDrive, !keyboard1, red1Strat, red1Zone));
             robots.Add(new AerialRobot(sonic, new Vector2(sonicScale * widthScale, sonicScale * heightScale), new Vector2(widthScale * 260f, heightScale * 100f), Color.Blue, (float)Math.PI+.00001f, 0f, new KeyboardInput(PlayerIndex.Two), AerialRobot.McCannumDrive, !keyboard2, blue1Strat, blue1Zone));
-            robots.Add(new AerialRobot(diamondBack, new Vector2(dBScale * widthScale, dBScale * heightScale), new Vector2(widthScale * 320f, heightScale * 150f), Color.Red, .00001f, 0f, new ControllerInput(PlayerIndex.One), AerialRobot.McCannumDrive, !GamePad.GetState(PlayerIndex.One).IsConnected, red2Strat, red2Zone));
-            robots.Add(new AerialRobot(sonic, new Vector2(sonicScale * widthScale, sonicScale * heightScale), new Vector2(widthScale * 260f, heightScale * 150f), Color.Blue, (float)Math.PI + .00001f, 0f, new ControllerInput(PlayerIndex.Two), AerialRobot.McCannumDrive, !GamePad.GetState(PlayerIndex.Two).IsConnected, blue2Strat, blue2Zone));
+            robots.Add(new AerialRobot(diamondBack, new Vector2(dBScale * widthScale, dBScale * heightScale), new Vector2(widthScale * 320f, heightScale * 150f), Color.Red, .00001f, 0f, new ControllerInput(PlayerIndex.Two), AerialRobot.McCannumDrive, !GamePad.GetState(PlayerIndex.One).IsConnected, red2Strat, red2Zone));
+            robots.Add(new AerialRobot(sonic, new Vector2(sonicScale * widthScale, sonicScale * heightScale), new Vector2(widthScale * 260f, heightScale * 150f), Color.Blue, (float)Math.PI + .00001f, 0f, new ControllerInput(PlayerIndex.One), AerialRobot.McCannumDrive, !GamePad.GetState(PlayerIndex.Two).IsConnected, blue2Strat, blue2Zone));
             robots.Add(new AerialRobot(diamondBack, new Vector2(dBScale * widthScale, dBScale * heightScale), new Vector2(widthScale * 320f, heightScale * 200f), Color.Red, .00001f, 0f, new ControllerInput(PlayerIndex.Three), AerialRobot.McCannumDrive, !GamePad.GetState(PlayerIndex.Three).IsConnected, red3Strat, red3Zone));
             robots.Add(new AerialRobot(sonic, new Vector2(sonicScale * widthScale, sonicScale * heightScale), new Vector2(widthScale * 260f, heightScale * 200f), Color.Blue, (float)Math.PI + .00001f, 0f, new ControllerInput(PlayerIndex.Four), AerialRobot.McCannumDrive, !GamePad.GetState(PlayerIndex.Four).IsConnected, blue3Strat, blue3Zone));
 
@@ -507,9 +507,9 @@ namespace AerialAssist
                     blue1Zone = 0;
                 }
 
-                if (GamePad.GetState(PlayerIndex.Two).IsConnected)
+                if (GamePad.GetState(PlayerIndex.One).IsConnected)
                 {
-                    blueTeamI = new ControllerInput(PlayerIndex.Two);
+                    blueTeamI = new ControllerInput(PlayerIndex.One);
                     blue2Strat = 0;
                     blue2Zone = 0;
                 }
@@ -528,9 +528,9 @@ namespace AerialAssist
                     red1Zone = 0;
                 }
 
-                if (GamePad.GetState(PlayerIndex.One).IsConnected)
+                if (GamePad.GetState(PlayerIndex.Two).IsConnected)
                 {
-                    redTeamI = new ControllerInput(PlayerIndex.One);
+                    redTeamI = new ControllerInput(PlayerIndex.Two);
                     red2Zone = 0;
                     red2Zone = 0;
                 }
