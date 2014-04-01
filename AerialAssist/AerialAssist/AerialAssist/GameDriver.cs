@@ -68,7 +68,7 @@ namespace AerialAssist
         {
             graphics = new GraphicsDeviceManager(this);
             
-            graphics.IsFullScreen = false;
+            graphics.IsFullScreen = true;
             keyboard1 = true;
             keyboard2 = false;
 

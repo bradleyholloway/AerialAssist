@@ -217,6 +217,7 @@ namespace AerialAssist
                 {
                     aiHandler.putCommand(new AICommand(AICommand.positionCommand, new Vector2(0, 0), 300.0));
                     aiHandler.putCommand(new AICommand(AICommand.fireCommand, null, 300));
+                    aiHandler.putCommand(new AICommand(AICommand.defenseCommand, null, 100));
                 }
                 if (AImode == PassAI)
                 {
