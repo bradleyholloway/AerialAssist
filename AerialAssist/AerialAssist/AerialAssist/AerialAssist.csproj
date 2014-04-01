@@ -61,7 +61,7 @@
     <XnaCompressContent>true</XnaCompressContent>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>8A8C61343E47D027C616990BF9B47517E95FA89A</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>2E20570067CFC1CF707F169C7735F5052DB16C90</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestKeyFile>AerialAssist_2_TemporaryKey.pfx</ManifestKeyFile>
@@ -170,6 +170,9 @@
       <ProductName>Microsoft XNA Framework Redistributable 4.0</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="AerialAssist_2_TemporaryKey.pfx" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\Microsoft.Xna.GameStudio.targets" />
