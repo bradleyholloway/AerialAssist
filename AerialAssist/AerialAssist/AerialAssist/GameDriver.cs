@@ -42,6 +42,8 @@ namespace AerialAssist
         int blue1Strat = -1, blue2Strat = -1, blue3Strat = -1;
         int red1Zone = -1, red2Zone = -1, red3Zone = -1;
         int blue1Zone = -1, blue2Zone = -1, blue3Zone = -1;
+        int red1Drive, red2Drive, red3Drive;
+        int blue1Drive, blue2Drive, blue3Drive;
         MenuInput redTeamInput = null;
         MenuInput blueTeamInput = null;
 
@@ -170,12 +172,12 @@ namespace AerialAssist
             float dBScale = .045f;
 
             robots = new List<Robot>();
-            robots.Add(new AerialRobot(diamondBack, new Vector2(dBScale * widthScale, dBScale * heightScale), new Vector2(widthScale * 320f, heightScale * 100f), Color.Red, .00001f, 0f, new KeyboardInput(PlayerIndex.One), AerialRobot.McCannumDrive, !keyboard1, red1Strat, red1Zone));
-            robots.Add(new AerialRobot(sonic, new Vector2(sonicScale * widthScale, sonicScale * heightScale), new Vector2(widthScale * 260f, heightScale * 100f), Color.Blue, (float)Math.PI+.00001f, 0f, new KeyboardInput(PlayerIndex.Two), AerialRobot.McCannumDrive, !keyboard2, blue1Strat, blue1Zone));
-            robots.Add(new AerialRobot(diamondBack, new Vector2(dBScale * widthScale, dBScale * heightScale), new Vector2(widthScale * 320f, heightScale * 150f), Color.Red, .00001f, 0f, new ControllerInput(PlayerIndex.Two), AerialRobot.McCannumDrive, !GamePad.GetState(PlayerIndex.Two).IsConnected, red2Strat, red2Zone));
-            robots.Add(new AerialRobot(sonic, new Vector2(sonicScale * widthScale, sonicScale * heightScale), new Vector2(widthScale * 260f, heightScale * 150f), Color.Blue, (float)Math.PI + .00001f, 0f, new ControllerInput(PlayerIndex.One), AerialRobot.McCannumDrive, !GamePad.GetState(PlayerIndex.One).IsConnected, blue2Strat, blue2Zone));
-            robots.Add(new AerialRobot(diamondBack, new Vector2(dBScale * widthScale, dBScale * heightScale), new Vector2(widthScale * 320f, heightScale * 200f), Color.Red, .00001f, 0f, new ControllerInput(PlayerIndex.Four), AerialRobot.McCannumDrive, !GamePad.GetState(PlayerIndex.Four).IsConnected, red3Strat, red3Zone));
-            robots.Add(new AerialRobot(sonic, new Vector2(sonicScale * widthScale, sonicScale * heightScale), new Vector2(widthScale * 260f, heightScale * 200f), Color.Blue, (float)Math.PI + .00001f, 0f, new ControllerInput(PlayerIndex.Three), AerialRobot.McCannumDrive, !GamePad.GetState(PlayerIndex.Three).IsConnected, blue3Strat, blue3Zone));
+            robots.Add(new AerialRobot(diamondBack, new Vector2(dBScale * widthScale, dBScale * heightScale), new Vector2(widthScale * 320f, heightScale * 100f), Color.Red, .00001f, 0f, new KeyboardInput(PlayerIndex.One), red1Drive, !keyboard1, red1Strat, red1Zone));
+            robots.Add(new AerialRobot(sonic, new Vector2(sonicScale * widthScale, sonicScale * heightScale), new Vector2(widthScale * 260f, heightScale * 100f), Color.Blue, (float)Math.PI+.00001f, 0f, new KeyboardInput(PlayerIndex.Two), blue1Drive, !keyboard2, blue1Strat, blue1Zone));
+            robots.Add(new AerialRobot(diamondBack, new Vector2(dBScale * widthScale, dBScale * heightScale), new Vector2(widthScale * 320f, heightScale * 150f), Color.Red, .00001f, 0f, new ControllerInput(PlayerIndex.Two), red2Drive, !GamePad.GetState(PlayerIndex.Two).IsConnected, red2Strat, red2Zone));
+            robots.Add(new AerialRobot(sonic, new Vector2(sonicScale * widthScale, sonicScale * heightScale), new Vector2(widthScale * 260f, heightScale * 150f), Color.Blue, (float)Math.PI + .00001f, 0f, new ControllerInput(PlayerIndex.One), blue2Drive, !GamePad.GetState(PlayerIndex.One).IsConnected, blue2Strat, blue2Zone));
+            robots.Add(new AerialRobot(diamondBack, new Vector2(dBScale * widthScale, dBScale * heightScale), new Vector2(widthScale * 320f, heightScale * 200f), Color.Red, .00001f, 0f, new ControllerInput(PlayerIndex.Four),red3Drive, !GamePad.GetState(PlayerIndex.Four).IsConnected, red3Strat, red3Zone));
+            robots.Add(new AerialRobot(sonic, new Vector2(sonicScale * widthScale, sonicScale * heightScale), new Vector2(widthScale * 260f, heightScale * 200f), Color.Blue, (float)Math.PI + .00001f, 0f, new ControllerInput(PlayerIndex.Three), blue3Drive, !GamePad.GetState(PlayerIndex.Three).IsConnected, blue3Strat, blue3Zone));
 
             balls = new List<Ball>();
             balls.Add(new Ball(robots.ElementAt<Robot>(0), Color.Red, robots.ElementAt<Robot>(2), robots.ElementAt<Robot>(4)));
