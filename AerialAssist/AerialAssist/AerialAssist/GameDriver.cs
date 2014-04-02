@@ -26,6 +26,7 @@ namespace AerialAssist
         List<MenuItem> menuItems;
         List<MenuItem> strategyMenu;
         List<MenuItem> zoneMenu;
+        List<MenuItem> driveMenu;
         int menuIndex, bmenuIndex, rmenuIndex;
         bool firstCycle, pressed;
 
@@ -92,6 +93,12 @@ namespace AerialAssist
             menuItems.Add(new MenuItem("2  Keyboard", new Vector2(100f, 300f), Color.Red, 3));
             menuItems.Add(new MenuItem("Quit", new Vector2(100f, 350f), Color.Black, 99));
 
+            driveMenu = new List<MenuItem>();
+            driveMenu.Add(new MenuItem("Arcade Drive", new Vector2(0, 0), Color.White, AerialRobot.ArcadeDrive));
+            driveMenu.Add(new MenuItem("McCannum Drive", new Vector2(20, 20), Color.White, AerialRobot.McCannumDrive));
+            driveMenu.Add(new MenuItem("Field Centric Drive", new Vector2(30, 30), Color.White, AerialRobot.FieldCentric));
+            //driveMenu.Add(new MenuItem("Unicorn Drive", new Vector2(40, 40), Color.White, AerialRobot.UnicornDrive));
+            
             strategyMenu = new List<MenuItem>();
             strategyMenu.Add(new MenuItem("Standard", new Vector2(0,0), Color.White, AerialRobot.StandardAI));
             strategyMenu.Add(new MenuItem("Recieve and Shoot" , new Vector2(0,100), Color.White, AerialRobot.RecieveAndShootAI));
@@ -489,21 +496,27 @@ namespace AerialAssist
             {
                 red1Strat = -1;// AerialRobot.FollowAndShootAI;
                 red1Zone = -1;//AerialRobot.BluePrimary;
+                red1Drive = 0;
 
                 red2Strat = -1;//AerialRobot.RecieveAndShootAI;
                 red2Zone = -1;//AerialRobot.WhitePrimary;
+                red2Drive = 0;
 
                 red3Strat = -1;//AerialRobot.RecieveAndShootAI;
                 red3Zone = -1;//AerialRobot.RedPrimary;
+                red3Drive = 0;
 
                 blue1Strat = -1;//AerialRobot.FollowAndShootAI;
                 blue1Zone = -1;//AerialRobot.RedPrimary;
+                blue1Drive = 0;
 
                 blue2Strat = -1;//AerialRobot.RecieveAndShootAI;
                 blue2Zone = -1;//AerialRobot.WhitePrimary;
+                blue2Drive = 0;
 
                 blue3Strat = -1;//AerialRobot.RecieveAndShootAI;
                 blue3Zone = -1;//AerialRobot.BluePrimary;
+                blue3Drive = 0;
 
                 Input blueTeamI = null;
                 Input redTeamI = null;
@@ -513,6 +526,7 @@ namespace AerialAssist
                     blueTeamI = new KeyboardInput(PlayerIndex.Two);
                     blue1Strat = 0;
                     blue1Zone = 0;
+                    blue1Drive = -1;
                 }
 
                 if (GamePad.GetState(PlayerIndex.One).IsConnected)
@@ -520,12 +534,14 @@ namespace AerialAssist
                     blueTeamI = new ControllerInput(PlayerIndex.One);
                     blue2Strat = 0;
                     blue2Zone = 0;
+                    blue2Drive = -1;
                 }
 
                 if (GamePad.GetState(PlayerIndex.Three).IsConnected)
                 {
                     blue3Strat = 0;
                     blue3Zone = 0;
+                    blue3Drive = -1;
                 }
 
 
@@ -534,6 +550,7 @@ namespace AerialAssist
                     redTeamI = new KeyboardInput(PlayerIndex.One);
                     red1Strat = 0;
                     red1Zone = 0;
+                    red1Drive = -1;
                 }
 
                 if (GamePad.GetState(PlayerIndex.Two).IsConnected)
@@ -541,12 +558,14 @@ namespace AerialAssist
                     redTeamI = new ControllerInput(PlayerIndex.Two);
                     red2Zone = 0;
                     red2Zone = 0;
+                    red2Drive = -1;
                 }
 
                 if (GamePad.GetState(PlayerIndex.Four).IsConnected)
                 {
                     red3Zone = 0;
                     red3Strat = 0;
+                    red3Drive = -1;
                 }
                 if (blueTeamI != null)
                 {
@@ -577,7 +596,43 @@ namespace AerialAssist
 
                     redTeamInput.run();
                     int act = redTeamInput.getAction();
-                    if (red1Zone == -1 || red2Zone == -1 || red3Zone == -1)
+                    if (red1Drive == -1 || red2Drive == -1 || red3Drive == -1)
+                    {
+                        if (act == 1)
+                        {
+                            rmenuIndex--;
+                            if (rmenuIndex == -1)
+                            {
+                                rmenuIndex = driveMenu.Count - 1;
+                            }
+                        }
+                        else if (act == -1)
+                        {
+                            rmenuIndex++;
+                            if (rmenuIndex == driveMenu.Count)
+                            {
+                                rmenuIndex = 0;
+                            }
+                        }
+                        else if (act == 3)
+                        {
+                            int temp = driveMenu.ElementAt<MenuItem>(rmenuIndex).point();
+                            if (red1Drive == -1)
+                            {
+                                red1Drive = temp;
+                            }
+                            else if (red2Drive == -1)
+                            {
+                                red2Drive = temp;
+                            }
+                            else if (red3Drive == -1)
+                            {
+                                red3Drive = temp;
+                            }
+
+                        }
+                    }
+                    else if (red1Zone == -1 || red2Zone == -1 || red3Zone == -1)
                     {
                         if (act == 1)
                         {
@@ -669,7 +724,43 @@ namespace AerialAssist
 
                     blueTeamInput.run();
                     int act = blueTeamInput.getAction();
-                    if (blue1Zone == -1 || blue2Zone == -1 || blue3Zone == -1)
+                    if (blue1Drive == -1 || blue2Drive == -1 || blue3Drive == -1)
+                    {
+                        if (act == 1)
+                        {
+                            bmenuIndex--;
+                            if (bmenuIndex == -1)
+                            {
+                                bmenuIndex = driveMenu.Count - 1;
+                            }
+                        }
+                        else if (act == -1)
+                        {
+                            bmenuIndex++;
+                            if (bmenuIndex == driveMenu.Count)
+                            {
+                                bmenuIndex = 0;
+                            }
+                        }
+                        else if (act == 3)
+                        {
+                            int temp = driveMenu.ElementAt<MenuItem>(bmenuIndex).point();
+                            if (blue1Drive == -1)
+                            {
+                                blue1Drive = temp;
+                            }
+                            else if (blue2Drive == -1)
+                            {
+                                blue2Drive = temp;
+                            }
+                            else if (blue3Drive == -1)
+                            {
+                                blue3Drive = temp;
+                            }
+
+                        }
+                    }
+                    else if (blue1Zone == -1 || blue2Zone == -1 || blue3Zone == -1)
                     {
                         if (act == 1)
                         {
@@ -755,7 +846,7 @@ namespace AerialAssist
                     blue3Strat = AerialRobot.RecieveAndShootAI;
                 }
 
-                if (blue1Strat != -1 && blue2Strat != -1 && blue3Strat != -1 && red1Strat != -1 && red2Strat != -1 && red3Strat != -1)
+                if (blue1Drive != -1 && blue2Drive != -1 && blue3Drive != -1 && red1Drive != -1 && red2Drive != -1 && red3Drive != -1 && blue1Strat != -1 && blue2Strat != -1 && blue3Strat != -1 && red1Strat != -1 && red2Strat != -1 && red3Strat != -1)
                 {
                     gameState = 1;
                     LoadContent();
@@ -849,7 +940,15 @@ namespace AerialAssist
                 if (redTeamInput != null)
                 {
                     Vector2 red = new Vector2(GraphicsDevice.Viewport.Width / 2 + 100, 50);
-                    if (red1Zone == -1 || red2Zone == -1 || red3Zone == -1)
+                    if (red1Drive == -1 || red2Drive == -1 || red3Drive == -1)
+                    {
+                        foreach (MenuItem m in driveMenu)
+                        {
+                            spriteBatch.DrawString(timesNewRoman, m.text(), m.location() + red, m.color());
+                        }
+                        spriteBatch.Draw(Ball.image, driveMenu.ElementAt<MenuItem>(rmenuIndex).location() + new Vector2(-45, 5) + red, null, Color.Red, 0f, Vector2.Zero, new Vector2(.2f, .2f), SpriteEffects.None, 0f);
+                    }
+                    else if (red1Zone == -1 || red2Zone == -1 || red3Zone == -1)
                     {
                         foreach (MenuItem m in zoneMenu)
                         {
@@ -870,6 +969,14 @@ namespace AerialAssist
                 {
                     Vector2 blue = new Vector2(150, 50);
                     if (blue1Zone == -1 || blue2Zone == -1 || blue3Zone == -1)
+                    {
+                        foreach (MenuItem m in driveMenu)
+                        {
+                            spriteBatch.DrawString(timesNewRoman, m.text(), m.location() + blue, m.color());
+                        }
+                        spriteBatch.Draw(Ball.image, driveMenu.ElementAt<MenuItem>(bmenuIndex).location() + new Vector2(-45, 5) + blue, null, Color.Blue, 0f, Vector2.Zero, new Vector2(.2f, .2f), SpriteEffects.None, 0f);
+                    }
+                    else if (blue1Zone == -1 || blue2Zone == -1 || blue3Zone == -1)
                     {
                         foreach (MenuItem m in zoneMenu)
                         {
