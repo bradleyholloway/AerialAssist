@@ -95,9 +95,9 @@ namespace AerialAssist
 
             driveMenu = new List<MenuItem>();
             driveMenu.Add(new MenuItem("Arcade Drive", new Vector2(0, 0), Color.White, AerialRobot.ArcadeDrive));
-            driveMenu.Add(new MenuItem("McCannum Drive", new Vector2(20, 20), Color.White, AerialRobot.McCannumDrive));
-            driveMenu.Add(new MenuItem("Field Centric Drive", new Vector2(30, 30), Color.White, AerialRobot.FieldCentric));
-            //driveMenu.Add(new MenuItem("Unicorn Drive", new Vector2(40, 40), Color.White, AerialRobot.UnicornDrive));
+            driveMenu.Add(new MenuItem("McCannum Drive", new Vector2(0,100), Color.White, AerialRobot.McCannumDrive));
+            driveMenu.Add(new MenuItem("Field Centric Drive", new Vector2(0, 200), Color.White, AerialRobot.FieldCentric));
+            driveMenu.Add(new MenuItem("Unicorn Drive", new Vector2(0, 300), Color.White, AerialRobot.McCannumDrive));
             
             strategyMenu = new List<MenuItem>();
             strategyMenu.Add(new MenuItem("Standard", new Vector2(0,0), Color.White, AerialRobot.StandardAI));
@@ -601,7 +601,7 @@ namespace AerialAssist
                         if (act == 1)
                         {
                             rmenuIndex--;
-                            if (rmenuIndex == -1)
+                            if (rmenuIndex <= -1)
                             {
                                 rmenuIndex = driveMenu.Count - 1;
                             }
@@ -609,7 +609,7 @@ namespace AerialAssist
                         else if (act == -1)
                         {
                             rmenuIndex++;
-                            if (rmenuIndex == driveMenu.Count)
+                            if (rmenuIndex >= driveMenu.Count)
                             {
                                 rmenuIndex = 0;
                             }
@@ -637,7 +637,7 @@ namespace AerialAssist
                         if (act == 1)
                         {
                             rmenuIndex--;
-                            if (rmenuIndex == -1)
+                            if (rmenuIndex <= -1)
                             {
                                 rmenuIndex = zoneMenu.Count - 1;
                             }
@@ -645,7 +645,7 @@ namespace AerialAssist
                         else if (act == -1)
                         {
                             rmenuIndex++;
-                            if (rmenuIndex == zoneMenu.Count)
+                            if (rmenuIndex >= zoneMenu.Count)
                             {
                                 rmenuIndex = 0;
                             }
@@ -675,7 +675,7 @@ namespace AerialAssist
                             if (act == 1)
                             {
                                 rmenuIndex--;
-                                if (rmenuIndex == -1)
+                                if (rmenuIndex <= -1)
                                 {
                                     rmenuIndex = strategyMenu.Count - 1;
                                 }
@@ -683,7 +683,7 @@ namespace AerialAssist
                             else if (act == -1)
                             {
                                 rmenuIndex++;
-                                if (rmenuIndex == strategyMenu.Count)
+                                if (rmenuIndex >= strategyMenu.Count)
                                 {
                                     rmenuIndex = 0;
                                 }
@@ -729,7 +729,7 @@ namespace AerialAssist
                         if (act == 1)
                         {
                             bmenuIndex--;
-                            if (bmenuIndex == -1)
+                            if (bmenuIndex <= -1)
                             {
                                 bmenuIndex = driveMenu.Count - 1;
                             }
@@ -737,7 +737,7 @@ namespace AerialAssist
                         else if (act == -1)
                         {
                             bmenuIndex++;
-                            if (bmenuIndex == driveMenu.Count)
+                            if (bmenuIndex >= driveMenu.Count)
                             {
                                 bmenuIndex = 0;
                             }
@@ -765,7 +765,7 @@ namespace AerialAssist
                         if (act == 1)
                         {
                             bmenuIndex--;
-                            if (bmenuIndex == -1)
+                            if (bmenuIndex <= -1)
                             {
                                 bmenuIndex = zoneMenu.Count - 1;
                             }
@@ -773,7 +773,7 @@ namespace AerialAssist
                         else if (act == -1)
                         {
                             bmenuIndex++;
-                            if (bmenuIndex == zoneMenu.Count)
+                            if (bmenuIndex >= zoneMenu.Count)
                             {
                                 bmenuIndex = 0;
                             }
@@ -803,7 +803,7 @@ namespace AerialAssist
                             if (act == 1)
                             {
                                 bmenuIndex--;
-                                if (bmenuIndex == -1)
+                                if (bmenuIndex <= -1)
                                 {
                                     bmenuIndex = strategyMenu.Count - 1;
                                 }
@@ -811,7 +811,7 @@ namespace AerialAssist
                             else if (act == -1)
                             {
                                 bmenuIndex++;
-                                if (bmenuIndex == strategyMenu.Count)
+                                if (bmenuIndex >= strategyMenu.Count)
                                 {
                                     bmenuIndex = 0;
                                 }
@@ -954,7 +954,10 @@ namespace AerialAssist
                         {
                             spriteBatch.DrawString(timesNewRoman, m.text(), m.location() + red, m.color());
                         }
-                        spriteBatch.Draw(Ball.image, zoneMenu.ElementAt<MenuItem>(rmenuIndex).location() + new Vector2(-45, 5) + red, null, Color.Red, 0f, Vector2.Zero, new Vector2(.2f, .2f), SpriteEffects.None, 0f);
+                        if (rmenuIndex < zoneMenu.Count)
+                        {
+                            spriteBatch.Draw(Ball.image, zoneMenu.ElementAt<MenuItem>(rmenuIndex).location() + new Vector2(-45, 5) + red, null, Color.Red, 0f, Vector2.Zero, new Vector2(.2f, .2f), SpriteEffects.None, 0f);
+                        }
                     }
                     else if (red1Strat == -1 || red2Strat == -1 || red3Strat == -1)
                     {
@@ -962,7 +965,10 @@ namespace AerialAssist
                         {
                             spriteBatch.DrawString(timesNewRoman, m.text(), m.location() + red, m.color());
                         }
-                        spriteBatch.Draw(Ball.image, strategyMenu.ElementAt<MenuItem>(rmenuIndex).location() + new Vector2(-45, 5) + red, null, Color.Red, 0f, Vector2.Zero, new Vector2(.2f, .2f), SpriteEffects.None, 0f);
+                        if (rmenuIndex < strategyMenu.Count)
+                        {
+                            spriteBatch.Draw(Ball.image, strategyMenu.ElementAt<MenuItem>(rmenuIndex).location() + new Vector2(-45, 5) + red, null, Color.Red, 0f, Vector2.Zero, new Vector2(.2f, .2f), SpriteEffects.None, 0f);
+                        }
                     }
                 }
                 if (blueTeamInput != null)
@@ -982,7 +988,10 @@ namespace AerialAssist
                         {
                             spriteBatch.DrawString(timesNewRoman, m.text(), m.location() + blue, m.color());
                         }
-                        spriteBatch.Draw(Ball.image, zoneMenu.ElementAt<MenuItem>(bmenuIndex).location() + new Vector2(-45, 5) + blue, null, Color.Blue, 0f, Vector2.Zero, new Vector2(.2f, .2f), SpriteEffects.None, 0f);
+                        if (bmenuIndex < zoneMenu.Count)
+                        {
+                            spriteBatch.Draw(Ball.image, zoneMenu.ElementAt<MenuItem>(bmenuIndex).location() + new Vector2(-45, 5) + blue, null, Color.Blue, 0f, Vector2.Zero, new Vector2(.2f, .2f), SpriteEffects.None, 0f);
+                        }
                     }
                     else if (blue1Strat == -1 || blue2Strat == -1 || blue3Strat == -1)
                     {
@@ -990,7 +999,10 @@ namespace AerialAssist
                         {
                             spriteBatch.DrawString(timesNewRoman, m.text(), m.location() + blue, m.color());
                         }
-                        spriteBatch.Draw(Ball.image, strategyMenu.ElementAt<MenuItem>(bmenuIndex).location() + new Vector2(-45, 5) + blue, null, Color.Blue, 0f, Vector2.Zero, new Vector2(.2f, .2f), SpriteEffects.None, 0f);
+                        if (bmenuIndex < strategyMenu.Count)
+                        {
+                            spriteBatch.Draw(Ball.image, strategyMenu.ElementAt<MenuItem>(bmenuIndex).location() + new Vector2(-45, 5) + blue, null, Color.Blue, 0f, Vector2.Zero, new Vector2(.2f, .2f), SpriteEffects.None, 0f);
+                        }
                     }
                 }
 
