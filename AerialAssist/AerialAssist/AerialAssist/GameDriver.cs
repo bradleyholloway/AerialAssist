@@ -229,6 +229,10 @@ namespace AerialAssist
             if (gameState == 0)
             {
                 titleScreenInstance.Play();
+                foreach (Robot r in robots)
+                {
+                    r.stopSound();
+                }
                 menuInput.run();
                 int act = menuInput.getAction();
                 if (act == 1)
