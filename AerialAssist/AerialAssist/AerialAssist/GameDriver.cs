@@ -229,6 +229,8 @@ namespace AerialAssist
             if (gameState == 0)
             {
                 titleScreenInstance.Play();
+                endGameInstance.Stop();
+                gamePlayInstance.Stop();
                 foreach (Robot r in robots)
                 {
                     r.stopSound();
