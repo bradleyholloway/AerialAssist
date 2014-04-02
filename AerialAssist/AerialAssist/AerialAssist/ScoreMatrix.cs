@@ -83,7 +83,8 @@ namespace AerialAssist
             return assistScore;
         }
 
-        public string ToString()
+        
+        public override string ToString()
         {
             String s = "";
             for (int i = 0; i < 3; i++)

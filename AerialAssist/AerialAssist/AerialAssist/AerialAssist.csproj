@@ -61,10 +61,11 @@
     <XnaCompressContent>true</XnaCompressContent>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>E01738AB89D0FE7C585FE6F6DEB245E72D8C097B</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>2E20570067CFC1CF707F169C7735F5052DB16C90</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>AerialAssist_TemporaryKey.pfx</ManifestKeyFile>
+    <ManifestKeyFile>
+    </ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
     <GenerateManifests>true</GenerateManifests>
