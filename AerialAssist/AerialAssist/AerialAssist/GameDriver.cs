@@ -174,8 +174,8 @@ namespace AerialAssist
             robots.Add(new AerialRobot(sonic, new Vector2(sonicScale * widthScale, sonicScale * heightScale), new Vector2(widthScale * 260f, heightScale * 100f), Color.Blue, (float)Math.PI+.00001f, 0f, new KeyboardInput(PlayerIndex.Two), AerialRobot.McCannumDrive, !keyboard2, blue1Strat, blue1Zone));
             robots.Add(new AerialRobot(diamondBack, new Vector2(dBScale * widthScale, dBScale * heightScale), new Vector2(widthScale * 320f, heightScale * 150f), Color.Red, .00001f, 0f, new ControllerInput(PlayerIndex.Two), AerialRobot.FieldCentric, !GamePad.GetState(PlayerIndex.Two).IsConnected, red2Strat, red2Zone));
             robots.Add(new AerialRobot(sonic, new Vector2(sonicScale * widthScale, sonicScale * heightScale), new Vector2(widthScale * 260f, heightScale * 150f), Color.Blue, (float)Math.PI + .00001f, 0f, new ControllerInput(PlayerIndex.One), AerialRobot.McCannumDrive, !GamePad.GetState(PlayerIndex.One).IsConnected, blue2Strat, blue2Zone));
-            robots.Add(new AerialRobot(diamondBack, new Vector2(dBScale * widthScale, dBScale * heightScale), new Vector2(widthScale * 320f, heightScale * 200f), Color.Red, .00001f, 0f, new ControllerInput(PlayerIndex.Three), AerialRobot.McCannumDrive, !GamePad.GetState(PlayerIndex.Three).IsConnected, red3Strat, red3Zone));
-            robots.Add(new AerialRobot(sonic, new Vector2(sonicScale * widthScale, sonicScale * heightScale), new Vector2(widthScale * 260f, heightScale * 200f), Color.Blue, (float)Math.PI + .00001f, 0f, new ControllerInput(PlayerIndex.Four), AerialRobot.McCannumDrive, !GamePad.GetState(PlayerIndex.Four).IsConnected, blue3Strat, blue3Zone));
+            robots.Add(new AerialRobot(diamondBack, new Vector2(dBScale * widthScale, dBScale * heightScale), new Vector2(widthScale * 320f, heightScale * 200f), Color.Red, .00001f, 0f, new ControllerInput(PlayerIndex.Four), AerialRobot.McCannumDrive, !GamePad.GetState(PlayerIndex.Four).IsConnected, red3Strat, red3Zone));
+            robots.Add(new AerialRobot(sonic, new Vector2(sonicScale * widthScale, sonicScale * heightScale), new Vector2(widthScale * 260f, heightScale * 200f), Color.Blue, (float)Math.PI + .00001f, 0f, new ControllerInput(PlayerIndex.Three), AerialRobot.McCannumDrive, !GamePad.GetState(PlayerIndex.Three).IsConnected, blue3Strat, blue3Zone));
 
             balls = new List<Ball>();
             balls.Add(new Ball(robots.ElementAt<Robot>(0), Color.Red, robots.ElementAt<Robot>(2), robots.ElementAt<Robot>(4)));
@@ -520,7 +520,7 @@ namespace AerialAssist
                     blue2Zone = 0;
                 }
 
-                if (GamePad.GetState(PlayerIndex.Four).IsConnected)
+                if (GamePad.GetState(PlayerIndex.Three).IsConnected)
                 {
                     blue3Strat = 0;
                     blue3Zone = 0;
@@ -541,7 +541,7 @@ namespace AerialAssist
                     red2Zone = 0;
                 }
 
-                if (GamePad.GetState(PlayerIndex.Three).IsConnected)
+                if (GamePad.GetState(PlayerIndex.Four).IsConnected)
                 {
                     red3Zone = 0;
                     red3Strat = 0;

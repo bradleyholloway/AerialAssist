@@ -61,10 +61,10 @@
     <XnaCompressContent>true</XnaCompressContent>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>2E20570067CFC1CF707F169C7735F5052DB16C90</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>E01738AB89D0FE7C585FE6F6DEB245E72D8C097B</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>AerialAssist_2_TemporaryKey.pfx</ManifestKeyFile>
+    <ManifestKeyFile>AerialAssist_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
     <GenerateManifests>true</GenerateManifests>
@@ -173,6 +173,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="AerialAssist_2_TemporaryKey.pfx" />
+    <None Include="AerialAssist_TemporaryKey.pfx" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\Microsoft.Xna.GameStudio.targets" />
