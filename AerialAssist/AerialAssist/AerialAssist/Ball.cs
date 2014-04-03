@@ -44,6 +44,7 @@ namespace AerialAssist
             this.isFree = false;
             this.linked.linkBall(this);
             this.matrix = new ScoreMatrix(startLink, r2, r3);
+            this.location = new Vector3(startLink.getLocation().X, startLink.getLocation().Y, 0);
         }
 
         public Ball(Vector2 startPosition, Color color, Robot r1, Robot r2, Robot r3)

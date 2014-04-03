@@ -94,19 +94,19 @@ namespace AerialAssist
             menuItems.Add(new MenuItem("Quit", new Vector2(100f, 350f), Color.Black, 99));
 
             driveMenu = new List<MenuItem>();
-            driveMenu.Add(new MenuItem("Arcade Drive", new Vector2(0, 0), Color.White, AerialRobot.ArcadeDrive));
-            driveMenu.Add(new MenuItem("McCannum Drive", new Vector2(0,100), Color.White, AerialRobot.McCannumDrive));
+            driveMenu.Add(new MenuItem("Arcade Drive", new Vector2(0, 100), Color.White, AerialRobot.ArcadeDrive));
+            driveMenu.Add(new MenuItem("McCannum Drive", new Vector2(0,150), Color.White, AerialRobot.McCannumDrive));
             driveMenu.Add(new MenuItem("Field Centric Drive", new Vector2(0, 200), Color.White, AerialRobot.FieldCentric));
-            driveMenu.Add(new MenuItem("Unicorn Drive", new Vector2(0, 300), Color.White, AerialRobot.McCannumDrive));
+            driveMenu.Add(new MenuItem("Unicorn Drive", new Vector2(0, 250), Color.White, AerialRobot.McCannumDrive));
             
             strategyMenu = new List<MenuItem>();
-            strategyMenu.Add(new MenuItem("Standard", new Vector2(0,0), Color.White, AerialRobot.StandardAI));
-            strategyMenu.Add(new MenuItem("Recieve and Shoot" , new Vector2(0,100), Color.White, AerialRobot.RecieveAndShootAI));
+            strategyMenu.Add(new MenuItem("Randomized", new Vector2(0,100), Color.White, AerialRobot.StandardAI));
+            strategyMenu.Add(new MenuItem("Recieve and Shoot" , new Vector2(0,150), Color.White, AerialRobot.RecieveAndShootAI));
             strategyMenu.Add(new MenuItem("Follow and Shoot" , new Vector2(0, 200), Color.White, AerialRobot.FollowAndShootAI));
 
             zoneMenu = new List<MenuItem>();
-            zoneMenu.Add(new MenuItem("Red Zone", new Vector2(0, 0), Color.Red, AerialRobot.RedPrimary));
-            zoneMenu.Add(new MenuItem("White Zone", new Vector2(0, 100), Color.White, AerialRobot.WhitePrimary));
+            zoneMenu.Add(new MenuItem("Red Zone", new Vector2(0, 100), Color.Red, AerialRobot.RedPrimary));
+            zoneMenu.Add(new MenuItem("White Zone", new Vector2(0, 150), Color.White, AerialRobot.WhitePrimary));
             zoneMenu.Add(new MenuItem("Blue Zone", new Vector2(0, 200), Color.Blue, AerialRobot.BluePrimary));
 
             AerialRobot.ArcadeDriveConstant = 4f;
@@ -873,7 +873,7 @@ namespace AerialAssist
 
 
             //Draw the Field
-            spriteBatch.Draw(field, new Vector2(0,0), null, Color.White, 0f, Vector2.Zero, new Vector2(widthScale, heightScale) , SpriteEffects.None, 0f);
+            spriteBatch.Draw(field, new Vector2(0,0), null, (gameState == 1) ? Color.White :  Color.DarkGray, 0f, Vector2.Zero, new Vector2(widthScale, heightScale) , SpriteEffects.None, 0f);
             foreach (Robot r in robots)
             {
                 spriteBatch.Draw(r.getImage(), r.getLocation(), null, r.getColor(), r.getRotation(), r.getOrigin(), r.getScale(), SpriteEffects.None, 0f);
@@ -910,8 +910,8 @@ namespace AerialAssist
 
             if (gameState == 0)
             {
-                spriteBatch.DrawString(timesNewRoman, "Aerial Assist", new Vector2(graphics.GraphicsDevice.Viewport.Width / 2 - 70f * widthScale, heightScale * 25f), Color.Black);
-                spriteBatch.DrawString(timesNewRoman, "Team 1477 Texas Torque", new Vector2(graphics.GraphicsDevice.Viewport.Width / 2 - 140f * widthScale, heightScale * 55f), Color.Black);
+                spriteBatch.DrawString(timesNewRoman, "Aerial Assist", new Vector2(graphics.GraphicsDevice.Viewport.Width / 2 - 70f * widthScale, heightScale * 25f), Color.White);
+                spriteBatch.DrawString(timesNewRoman, "Team 1477 Texas Torque", new Vector2(graphics.GraphicsDevice.Viewport.Width / 2 - 140f * widthScale, heightScale * 55f), Color.White);
                 foreach (MenuItem m in menuItems)
                 {
                     spriteBatch.DrawString(timesNewRoman, m.text(), m.location(), m.color());
@@ -942,6 +942,18 @@ namespace AerialAssist
                     Vector2 red = new Vector2(GraphicsDevice.Viewport.Width / 2 + 100, 50);
                     if (red1Drive == -1 || red2Drive == -1 || red3Drive == -1)
                     {
+                        if (red1Drive == -1)
+                        {
+                            spriteBatch.DrawString(timesNewRoman, "Keyboard 1", red, Color.Red);
+                        }
+                        else if (red2Drive == -1)
+                        {
+                            spriteBatch.DrawString(timesNewRoman, "Controller 2", red, Color.Red);
+                        }
+                        else
+                        {
+                            spriteBatch.DrawString(timesNewRoman, "Controller 3", red, Color.Red);
+                        }
                         foreach (MenuItem m in driveMenu)
                         {
                             spriteBatch.DrawString(timesNewRoman, m.text(), m.location() + red, m.color());
@@ -950,6 +962,18 @@ namespace AerialAssist
                     }
                     else if (red1Zone == -1 || red2Zone == -1 || red3Zone == -1)
                     {
+                        if (red1Zone == -1)
+                        {
+                            spriteBatch.DrawString(timesNewRoman, "Robot 1", red, Color.Red);
+                        }
+                        else if (red2Zone == -1)
+                        {
+                            spriteBatch.DrawString(timesNewRoman, "Robot 2", red, Color.Red);
+                        }
+                        else
+                        {
+                            spriteBatch.DrawString(timesNewRoman, "Robot 3", red, Color.Red);
+                        }
                         foreach (MenuItem m in zoneMenu)
                         {
                             spriteBatch.DrawString(timesNewRoman, m.text(), m.location() + red, m.color());
@@ -961,6 +985,18 @@ namespace AerialAssist
                     }
                     else if (red1Strat == -1 || red2Strat == -1 || red3Strat == -1)
                     {
+                        if (red1Strat == -1)
+                        {
+                            spriteBatch.DrawString(timesNewRoman, "Robot 1", red, Color.Red);
+                        }
+                        else if (red2Strat == -1)
+                        {
+                            spriteBatch.DrawString(timesNewRoman, "Robot 2", red, Color.Red);
+                        }
+                        else
+                        {
+                            spriteBatch.DrawString(timesNewRoman, "Robot 3", red, Color.Red);
+                        }
                         foreach (MenuItem m in strategyMenu)
                         {
                             spriteBatch.DrawString(timesNewRoman, m.text(), m.location() + red, m.color());
@@ -974,8 +1010,20 @@ namespace AerialAssist
                 if (blueTeamInput != null)
                 {
                     Vector2 blue = new Vector2(150, 50);
-                    if (blue1Zone == -1 || blue2Zone == -1 || blue3Zone == -1)
+                    if (blue1Drive == -1 || blue2Drive == -1 || blue3Drive == -1)
                     {
+                        if (blue1Drive == -1)
+                        {
+                            spriteBatch.DrawString(timesNewRoman, "Keyboard 2", blue, Color.White);
+                        }
+                        else if (blue2Drive == -1)
+                        {
+                            spriteBatch.DrawString(timesNewRoman, "Controller 1", blue, Color.White);
+                        }
+                        else
+                        {
+                            spriteBatch.DrawString(timesNewRoman, "Controller 4", blue, Color.White);
+                        }
                         foreach (MenuItem m in driveMenu)
                         {
                             spriteBatch.DrawString(timesNewRoman, m.text(), m.location() + blue, m.color());
@@ -984,6 +1032,18 @@ namespace AerialAssist
                     }
                     else if (blue1Zone == -1 || blue2Zone == -1 || blue3Zone == -1)
                     {
+                        if (blue1Zone == -1)
+                        {
+                            spriteBatch.DrawString(timesNewRoman, "Robot 1", blue, Color.Blue);
+                        }
+                        else if (blue2Zone == -1)
+                        {
+                            spriteBatch.DrawString(timesNewRoman, "Robot 2", blue, Color.Blue);
+                        }
+                        else
+                        {
+                            spriteBatch.DrawString(timesNewRoman, "Robot 3", blue, Color.Blue);
+                        }
                         foreach (MenuItem m in zoneMenu)
                         {
                             spriteBatch.DrawString(timesNewRoman, m.text(), m.location() + blue, m.color());
@@ -995,6 +1055,18 @@ namespace AerialAssist
                     }
                     else if (blue1Strat == -1 || blue2Strat == -1 || blue3Strat == -1)
                     {
+                        if (blue1Strat == -1)
+                        {
+                            spriteBatch.DrawString(timesNewRoman, "Robot 1", blue, Color.Blue);
+                        }
+                        else if (blue2Strat == -1)
+                        {
+                            spriteBatch.DrawString(timesNewRoman, "Robot 2", blue, Color.Blue);
+                        }
+                        else
+                        {
+                            spriteBatch.DrawString(timesNewRoman, "Robot 3", blue, Color.Blue);
+                        }
                         foreach (MenuItem m in strategyMenu)
                         {
                             spriteBatch.DrawString(timesNewRoman, m.text(), m.location() + blue, m.color());
