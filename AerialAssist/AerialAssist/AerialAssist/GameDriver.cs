@@ -164,14 +164,14 @@ namespace AerialAssist
             Ball.bounceDecay = .58f;
             Ball.onePointTop = 60 * heightScale;
             Ball.onePointBottom = GraphicsDevice.Viewport.Height - Ball.onePointTop;
-            AerialRobot.launchPower = 2.0f * (float)Math.Sqrt(widthScale * widthScale * heightScale * heightScale);
+            AerialRobot.launchPower = 1.5f * (float)Math.Sqrt(widthScale * widthScale * heightScale * heightScale);
             AerialRobot.widthScale = widthScale;
             AerialRobot.heightScale = heightScale;
             ScoreMatrix.blueWhiteZone = .35f * widthScale * field.Width;
             ScoreMatrix.redWhiteZone = .67f * widthScale * field.Width;
             AerialRobot.redZone = .67 * field.Width;
             AerialRobot.blueZone = .35f * field.Width;
-            AerialRobot.zoneBleed = 25f;
+            AerialRobot.zoneBleed = 32f;
 
             Texture2D sonic = Content.Load<Texture2D>("robot2");
             float sonicScale = .12f;
