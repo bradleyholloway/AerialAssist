@@ -103,6 +103,7 @@ namespace AerialAssist
             strategyMenu.Add(new MenuItem("Randomized", new Vector2(0,100), Color.White, AerialRobot.StandardAI));
             strategyMenu.Add(new MenuItem("Recieve and Shoot" , new Vector2(0,150), Color.White, AerialRobot.RecieveAndShootAI));
             strategyMenu.Add(new MenuItem("Follow and Shoot" , new Vector2(0, 200), Color.White, AerialRobot.FollowAndShootAI));
+            strategyMenu.Add(new MenuItem("Defence AI", new Vector2(0, 250), Color.White, AerialRobot.DefenseAI));
 
             zoneMenu = new List<MenuItem>();
             zoneMenu.Add(new MenuItem("Red Zone", new Vector2(0, 100), Color.Red, AerialRobot.RedPrimary));
@@ -556,7 +557,7 @@ namespace AerialAssist
                 if (GamePad.GetState(PlayerIndex.Two).IsConnected)
                 {
                     redTeamI = new ControllerInput(PlayerIndex.Two);
-                    red2Zone = 0;
+                    red2Strat = 0;
                     red2Zone = 0;
                     red2Drive = -1;
                 }
@@ -950,7 +951,7 @@ namespace AerialAssist
                         }
                         else
                         {
-                            spriteBatch.DrawString(timesNewRoman, "Controller 3", red, Color.Red);
+                            spriteBatch.DrawString(timesNewRoman, "Controller 4", red, Color.Red);
                         }
                         foreach (MenuItem m in driveMenu)
                         {
@@ -1020,7 +1021,7 @@ namespace AerialAssist
                         }
                         else
                         {
-                            spriteBatch.DrawString(timesNewRoman, "Controller 4", blue, Color.White);
+                            spriteBatch.DrawString(timesNewRoman, "Controller 3", blue, Color.White);
                         }
                         foreach (MenuItem m in driveMenu)
                         {
