@@ -899,8 +899,6 @@ namespace AerialAssist
                 //Draw the Balls
 
 
-                
-
                 //Draw the Score and Time
                 spriteBatch.DrawString(timesNewRoman, blueScore + "", new Vector2(widthScale * 20f, heightScale * 20f), Color.Blue);
                 spriteBatch.DrawString(timesNewRoman, redScore + "", new Vector2(graphics.GraphicsDevice.Viewport.Width - widthScale * 60f, heightScale * 20f), Color.Red);
