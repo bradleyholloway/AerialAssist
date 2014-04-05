@@ -110,8 +110,8 @@ namespace AerialAssist
             zoneMenu.Add(new MenuItem("White Zone", new Vector2(0, 150), Color.White, AerialRobot.WhitePrimary));
             zoneMenu.Add(new MenuItem("Blue Zone", new Vector2(0, 200), Color.Blue, AerialRobot.BluePrimary));
 
-            AerialRobot.ArcadeDriveConstant = 4f;
-            AerialRobot.McCannumDriveConstant = 3f;
+            AerialRobot.ArcadeDriveConstant = 4.6f;
+            AerialRobot.McCannumDriveConstant = 3.3f;
             AerialRobot.UnicornDriveConstant = 4f;
             AerialRobot.turnConst = .1f;
 
