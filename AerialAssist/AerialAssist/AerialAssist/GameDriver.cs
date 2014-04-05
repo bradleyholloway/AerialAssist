@@ -172,7 +172,7 @@ namespace AerialAssist
             ScoreMatrix.redWhiteZone = .67f * widthScale * field.Width;
             AerialRobot.redZone = .67 * field.Width;
             AerialRobot.blueZone = .35f * field.Width;
-            AerialRobot.zoneBleed = 32f;
+            AerialRobot.zoneBleed = 36f;
 
             Texture2D sonic = Content.Load<Texture2D>("robot2");
             float sonicScale = .12f;
