@@ -297,7 +297,7 @@ namespace AerialAssist
 
                 foreach (Robot r in robots)
                 {
-                    r.run(robots, balls, widthScale, heightScale);
+                    r.run(robots, balls, widthScale, heightScale, gameTime.TotalGameTime.Seconds);
                 }
                 for (int ball = 0; ball < balls.Count; ball++)
                 {

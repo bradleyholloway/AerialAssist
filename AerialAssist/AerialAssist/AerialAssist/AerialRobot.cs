@@ -39,6 +39,7 @@ namespace AerialAssist
         public const int BluePrimary = 2;
         public static double redZone = 600;
         public static double blueZone = 300;
+        public static double ballEjectTime = 3.0;
 
         private static Random r = new Random();
 
@@ -59,6 +60,7 @@ namespace AerialAssist
         private int stuckCount;
         private double power;
 
+        private double time;
         private AIHandler aiHandler;
         private AICommand previous;
         private double cycles;
@@ -67,6 +69,8 @@ namespace AerialAssist
         private float angularMomentum;
         private int primaryZone;
         private Vector2 previousPosition;
+        private double penaltyStart;
+
 
         public AerialRobot(Texture2D robotImage, Vector2 scale, Vector2 location, Color color, float rotation, float ballH, Input driverInput, int driveMode, bool CPU, int AImode, int primaryZone)
         {
@@ -390,9 +394,9 @@ namespace AerialAssist
             return new Vector2(robotImage.Width / 2, robotImage.Height / 2);
         }
 
-        void Robot.run(List<Robot> robots, List<Ball> balls, float widthScale, float heightScale)
+        void Robot.run(List<Robot> robots, List<Ball> balls, float widthScale, float heightScale, double time)
         {
-            
+            this.time = time;
             AerialRobot.widthScale = widthScale;
             AerialRobot.heightScale = heightScale;
             if (!CPU)
@@ -403,13 +407,14 @@ namespace AerialAssist
 
                 drive(robots, balls, turnAxis, powerAxis, strafeAxis);
 
-                if (driverInput.getRightTrigger() > .5)
+                if (driverInput.getRightTrigger() > .5 || (penaltyStart + ballEjectTime <= time && penaltyStart != 0))
                 {
                     if (activeBall != null)
                     {
                         launch.Play();
                         activeBall.launch(new Vector3(launchPower * (float)Math.Cos(rotation) + velocity.X, launchPower * (float)Math.Sin(rotation) + velocity.Y, 2f));
                         activeBall = null;
+                        penaltyStart = 0;
                     }
                 }
             }
@@ -816,9 +821,19 @@ namespace AerialAssist
                 {
                     if ((driverInput.getLeftTrigger() > .5 || (CPU && this.color.Equals(b.getColor()) && aiHandler.get().getType() != AICommand.defenseCommand && aiHandler.get().getType() != AICommand.driveCommand)) && Math.Abs(UTIL.normalizeDirection(rotation) - UTIL.normalizeDirection(UTIL.getDirectionTward(location, b.getLocation()))) < .6 && activeBall== null)
                     {
+                        
                         feed.Play();
                         b.linkRobot(this);
                         activeBall = b;
+                        if (b.getColor().Equals(this.color))
+                        {
+                            penaltyStart = 0.0;
+                        }
+                        else
+                        {
+                            penaltyStart = time;
+                        }
+
                     }
                     else
                     {
@@ -870,6 +885,14 @@ namespace AerialAssist
         void Robot.linkBall(Ball b)
         {
             this.activeBall = b;
+            if (!b.getColor().Equals(this.color))
+            {
+                penaltyStart = time;
+            }
+            else
+            {
+                penaltyStart = 0.0;
+            }
         }
     }
 }

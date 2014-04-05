@@ -16,7 +16,7 @@ namespace AerialAssist
         Color getColor();
         Vector2 getOrigin();
         float getBallHeight();
-        void run(List<Robot> robots, List<Ball> balls, float widthScale, float heightScale);
+        void run(List<Robot> robots, List<Ball> balls, float widthScale, float heightScale, double time);
         void linkBall(Ball ball);
         void stopSound();
         int pushRobot(Vector2 location, Vector2 velocityOfImpact, List<Robot> robots);
